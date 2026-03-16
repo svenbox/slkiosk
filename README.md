@@ -128,8 +128,3 @@ Väder hämtas direkt från:
 ```
 ?accent=%23111111&accenttext=%23ffffff&brand=https://foretaget.se/logo-white.svg
 ```
-
-### Frisör (Tre Sax & Kam)
-```
-?accent=%23111111&accenttext=%23ffffff&brand=https://tresaxochkam.se/logo.svg&brandname=Tre+Sax+%26+Kam&qr=https://tresaxochkam.se&qrlabel=Boka+tid
-```
