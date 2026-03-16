@@ -1,0 +1,13 @@
+services:
+  sl-kiosk:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: sl-kiosk
+    restart: unless-stopped
+    networks:
+      - mediastack
+
+networks:
+  mediastack:
+    external: true
