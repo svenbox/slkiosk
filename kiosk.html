@@ -1,0 +1,677 @@
+<!DOCTYPE html>
+<html lang="sv">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Infoskärm</title>
+<style>
+@font-face {
+  font-family:'SL Gothic Text 2';
+  src: url('https://afde-slweb-prod-axgjc2gedaepaveg.z01.azurefd.net/styleguide/8.3.0/staticcss/slgothictext2-regular.woff2') format('woff2');
+  font-weight: 400;
+}
+@font-face {
+  font-family:'SL Gothic Text 2';
+  src: url('https://afde-slweb-prod-axgjc2gedaepaveg.z01.azurefd.net/styleguide/8.3.0/staticcss/slgothictext2-bold.woff2') format('woff2');
+  font-weight: 700;
+}
+@font-face {
+  font-family:'SL Gothic Text 2';
+  src: url('https://afde-slweb-prod-axgjc2gedaepaveg.z01.azurefd.net/styleguide/8.3.0/staticcss/slgothictext2-medium.woff2') format('woff2');
+  font-weight: 500;
+}
+
+*, *::before, *::after { margin:0; padding:0; box-sizing:border-box; }
+
+:root {
+  --accent:      #1a2535;
+  --accent-text: #ffffff;
+  --accent-dim:  rgba(255,255,255,0.10);
+  --mod-bg:      #181b21;
+  --mod-surface: #1f2329;
+  --mod-border:  rgba(255,255,255,0.07);
+  --mod-text:    #f0f2f5;
+  --mod-text2:   #a8adb8;
+  --mod-text3:   #5a6070;
+  --sl-blue:     #005b99;
+  --sl-red:      #d4171e;
+  --sl-orange:   #e8830a;
+  --metro-green: #1d7a3a;
+  --c-now:       #3dba6a;
+  --c-soon:      #e05050;
+  --gap:         10px;
+  --radius:      10px;
+  --font:        'SL Gothic Text 2', system-ui, sans-serif;
+}
+
+html, body {
+  width:100%; height:100%;
+  overflow:hidden;
+  font-family: var(--font);
+  background: var(--accent);
+  color: var(--accent-text);
+  transform: translateZ(0);
+  -webkit-font-smoothing: antialiased;
+}
+
+/* ── LAYOUT ──────────────────────────── */
+#app {
+  display: grid;
+  grid-template-rows: 60px 40px 1fr auto;
+  height: 100vh;
+  width: 100vw;
+  padding: var(--gap) var(--gap) 0;
+  gap: 0;
+}
+
+/* ── TOPBAR ──────────────────────────── */
+#topbar {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 0 2px;
+  margin-bottom: 4px;
+}
+.tb-brand {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex: 1;
+  min-width: 0;
+}
+#brand-logo {
+  height: 36px;
+  max-width: 160px;
+  object-fit: contain;
+  object-position: left center;
+  flex-shrink: 0;
+  filter: brightness(0) invert(1);
+}
+#brand-logo.color { filter: none; }
+#brand-name {
+  font-size: clamp(1rem, 2vw, 1.5rem);
+  font-weight: 700;
+  color: var(--accent-text);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.tb-weather {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: var(--accent-dim);
+  border: 1px solid rgba(255,255,255,0.12);
+  border-radius: 8px;
+  padding: 5px 14px;
+  flex-shrink: 0;
+}
+.tb-w-icon { font-size:1.1rem; line-height:1; }
+.tb-w-temp { font-size:1.05rem; font-weight:700; color:var(--accent-text); }
+.tb-w-desc { font-size:0.7rem; color:rgba(255,255,255,0.65); white-space:nowrap; }
+.tb-w-wind { font-size:0.68rem; color:rgba(255,255,255,0.5); white-space:nowrap; }
+.tb-clock-wrap { text-align:right; flex-shrink:0; }
+#tb-clock {
+  font-size: 1.9rem;
+  font-weight: 700;
+  color: var(--accent-text);
+  letter-spacing: 0.05em;
+  line-height: 1;
+}
+#tb-date {
+  font-size: 0.62rem;
+  color: rgba(255,255,255,0.55);
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  margin-top: 1px;
+}
+
+/* ── TICKER ──────────────────────────── */
+#ticker-row {
+  display: flex;
+  align-items: stretch;
+  border-radius: var(--radius);
+  overflow: hidden;
+  margin-bottom: var(--gap);
+  height: 40px;
+  flex-shrink: 0;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.3);
+}
+.ticker-tag {
+  background: rgba(0,0,0,0.3);
+  color: rgba(255,255,255,0.65);
+  font-size: 0.6rem;
+  font-weight: 700;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  padding: 0 16px;
+  display: flex;
+  align-items: center;
+  flex-shrink: 0;
+  border-right: 1px solid rgba(255,255,255,0.08);
+  white-space: nowrap;
+}
+.ticker-track {
+  background: rgba(0,0,0,0.2);
+  overflow: hidden;
+  flex: 1;
+  display: flex;
+  align-items: center;
+  -webkit-mask-image: linear-gradient(to right,transparent 0%,black 2%,black 98%,transparent 100%);
+  mask-image: linear-gradient(to right,transparent 0%,black 2%,black 98%,transparent 100%);
+}
+.ticker-inner { display:flex; white-space:nowrap; }
+.ticker-item  { font-size:0.8rem; color:rgba(255,255,255,0.72); padding:0 44px; flex-shrink:0; }
+.ticker-item b { color:rgba(255,255,255,0.95); font-weight:600; }
+@keyframes ticker-scroll { 0%{transform:translateX(0)} 100%{transform:translateX(-50%)} }
+
+/* ── CONTENT (SL modules) ────────────── */
+#content {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: var(--gap);
+  min-height: 0;
+  overflow: hidden;
+}
+.module {
+  background: var(--mod-bg);
+  border-radius: var(--radius);
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.35);
+}
+
+/* ── DEP HEADER ──────────────────────── */
+.dep-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 16px 8px;
+  flex-shrink: 0;
+  border-bottom: 3px solid rgba(255,255,255,0.15);
+}
+.dep-header.blue   { background: var(--sl-blue); }
+.dep-header.red    { background: var(--sl-red); }
+.dep-header.green  { background: var(--metro-green); }
+.dep-header.orange { background: var(--sl-orange); }
+.dep-header.dark   { background: #2a2d33; }
+.dh-icon   { flex-shrink:0; }
+.dh-info   { flex:1; min-width:0; }
+.dh-stop   { color:white; font-size:clamp(0.95rem,1.8vw,1.4rem); font-weight:700; letter-spacing:0.02em; text-transform:uppercase; line-height:1.1; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+.dh-sub    { color:rgba(255,255,255,0.7); font-size:0.68rem; margin-top:2px; letter-spacing:0.04em; }
+.dh-upd    { font-size:0.58rem; color:rgba(255,255,255,0.4); flex-shrink:0; text-align:right; }
+
+/* ── COL HEADERS ─────────────────────── */
+.dep-col-hdr {
+  display: grid;
+  grid-template-columns: 46px 1fr 88px 70px;
+  gap: 8px;
+  padding: 4px 16px;
+  background: var(--mod-surface);
+  border-bottom: 1px solid var(--mod-border);
+  flex-shrink: 0;
+}
+.dch { font-size:0.58rem; font-weight:700; letter-spacing:0.08em; text-transform:uppercase; color:var(--mod-text3); }
+.dch.r { text-align:right; }
+
+/* ── DEP ROWS ────────────────────────── */
+.dep-list { flex:1; overflow:hidden; display:flex; flex-direction:column; }
+.dep-row {
+  display: grid;
+  grid-template-columns: 46px 1fr 88px 70px;
+  align-items: center;
+  gap: 8px;
+  padding: 0 16px;
+  min-height: clamp(42px,5.5vh,66px);
+  border-bottom: 1px solid var(--mod-border);
+  flex-shrink: 0;
+  animation: rowIn 0.18s ease both;
+}
+@keyframes rowIn { from{opacity:0;transform:translateX(-4px)} to{opacity:1;transform:none} }
+.dep-row:nth-child(odd)  { background:var(--mod-bg); }
+.dep-row:nth-child(even) { background:var(--mod-surface); }
+.dep-row:last-child { border-bottom:none; }
+.dep-badge   { border-radius:3px; padding:3px 2px; font-size:clamp(0.82rem,1.2vw,1.05rem); font-weight:700; color:white; text-align:center; width:46px; line-height:1.3; }
+.dep-dest    { font-size:clamp(0.88rem,1.3vw,1.1rem); font-weight:500; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; color:var(--mod-text); }
+.dep-dest.x  { color:var(--c-soon); text-decoration:line-through; }
+.dep-clock   { font-size:clamp(0.8rem,1.2vw,1rem); color:var(--mod-text2); text-align:right; }
+.dep-clock-x { font-size:0.68rem; color:var(--mod-text3); text-decoration:line-through; margin-left:3px; }
+.dep-time-col { text-align:right; display:flex; flex-direction:column; align-items:flex-end; justify-content:center; gap:1px; }
+.dep-t       { font-size:clamp(0.95rem,1.5vw,1.2rem); font-weight:700; color:var(--mod-text); line-height:1.1; letter-spacing:0.02em; }
+.dep-t.now   { color:var(--c-now); }
+.dep-t.soon  { color:var(--c-soon); }
+.dep-delay   { font-size:0.6rem; color:var(--c-soon); font-weight:500; }
+
+/* ── SKELETON ────────────────────────── */
+.dep-skel { display:grid; grid-template-columns:46px 1fr 88px 70px; gap:8px; padding:0 16px; min-height:clamp(42px,5.5vh,66px); align-items:center; border-bottom:1px solid var(--mod-border); flex-shrink:0; }
+.dep-skel:nth-child(odd)  { background:var(--mod-bg); }
+.dep-skel:nth-child(even) { background:var(--mod-surface); }
+.skel { border-radius:3px; background:linear-gradient(90deg,rgba(255,255,255,0.04) 25%,rgba(255,255,255,0.08) 50%,rgba(255,255,255,0.04) 75%); background-size:200% 100%; animation:shimmer 1.6s ease infinite; height:14px; }
+@keyframes shimmer { 0%{background-position:200% 0} 100%{background-position:-200% 0} }
+.dep-state { flex:1; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:6px; color:var(--mod-text3); font-size:0.8rem; padding:16px; text-align:center; }
+
+/* ── FOOTER ──────────────────────────── */
+#footer {
+  display: flex;
+  align-items: stretch;
+  gap: var(--gap);
+  padding: var(--gap) 0;
+  flex-shrink: 0;
+}
+
+/* Weather */
+#weather-mod {
+  flex: 1;
+  background: var(--mod-bg);
+  border-radius: var(--radius);
+  display: flex;
+  align-items: center;
+  gap: 18px;
+  padding: 10px 20px;
+  box-shadow: 0 4px 16px rgba(0,0,0,0.3);
+  overflow: hidden;
+  min-width: 0;
+}
+.wm-main  { display:flex; align-items:center; gap:10px; flex-shrink:0; }
+.wm-icon  { font-size:2.2rem; line-height:1; }
+.wm-temp  { font-size:2rem; font-weight:700; color:var(--mod-text); line-height:1; }
+.wm-temp sup { font-size:0.85rem; color:var(--mod-text2); }
+.wm-desc  { font-size:0.7rem; color:var(--mod-text2); margin-top:3px; }
+.wm-sep   { width:1px; background:var(--mod-border); align-self:stretch; flex-shrink:0; margin:4px 0; }
+.wm-dets  { display:flex; gap:14px; flex-shrink:0; }
+.wm-det   { display:flex; flex-direction:column; gap:2px; }
+.wm-det-l { font-size:0.56rem; font-weight:700; letter-spacing:0.07em; text-transform:uppercase; color:var(--mod-text3); }
+.wm-det-v { font-size:0.8rem; font-weight:500; color:var(--mod-text); }
+.wm-sep2  { width:1px; background:var(--mod-border); align-self:stretch; flex-shrink:0; margin:4px 0; }
+.wm-fc    { display:flex; gap:8px; overflow:hidden; }
+.wm-fc-d  { display:flex; flex-direction:column; align-items:center; gap:3px; flex-shrink:0; min-width:42px; }
+.wm-fc-l  { font-size:0.58rem; color:var(--mod-text3); text-transform:uppercase; letter-spacing:0.03em; }
+.wm-fc-i  { font-size:1rem; line-height:1; }
+.wm-fc-t  { font-size:0.68rem; font-weight:600; color:var(--mod-text2); }
+
+/* QR */
+#qr-mod {
+  background: var(--mod-bg);
+  border-radius: var(--radius);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 10px 16px;
+  gap: 5px;
+  flex-shrink: 0;
+  box-shadow: 0 4px 16px rgba(0,0,0,0.3);
+}
+#qr-canvas { border-radius:4px; }
+#qr-label  { font-size:0.58rem; color:var(--mod-text3); letter-spacing:0.05em; text-transform:uppercase; text-align:center; line-height:1.4; max-width:72px; }
+</style>
+</head>
+<body>
+<div id="app">
+
+  <!-- TOPBAR -->
+  <div id="topbar">
+    <div class="tb-brand">
+      <img id="brand-logo" src="" alt="" style="display:none">
+      <span id="brand-name"></span>
+    </div>
+    <div class="tb-weather" id="tb-weather" style="display:none">
+      <span class="tb-w-icon" id="tb-w-icon">⛅</span>
+      <span class="tb-w-temp" id="tb-w-temp">–</span>
+      <span class="tb-w-desc" id="tb-w-desc"></span>
+      <span class="tb-w-wind" id="tb-w-wind"></span>
+    </div>
+    <div class="tb-clock-wrap">
+      <div id="tb-clock">--:--</div>
+      <div id="tb-date"></div>
+    </div>
+  </div>
+
+  <!-- TICKER -->
+  <div id="ticker-row">
+    <div class="ticker-tag">Aktuellt</div>
+    <div class="ticker-track">
+      <div class="ticker-inner" id="ticker-inner"></div>
+    </div>
+  </div>
+
+  <!-- SL MODULES -->
+  <div id="content"></div>
+
+  <!-- FOOTER -->
+  <div id="footer">
+    <div id="weather-mod">
+      <div class="wm-main">
+        <div class="wm-icon" id="wm-icon">⛅</div>
+        <div>
+          <div class="wm-temp"><span id="wm-temp">–</span><sup>°C</sup></div>
+          <div class="wm-desc" id="wm-desc">Hämtar väder…</div>
+        </div>
+      </div>
+      <div class="wm-sep"></div>
+      <div class="wm-dets">
+        <div class="wm-det"><div class="wm-det-l">Vind</div><div class="wm-det-v" id="wm-wind">–</div></div>
+        <div class="wm-det"><div class="wm-det-l">Luftfukt.</div><div class="wm-det-v" id="wm-hum">–</div></div>
+        <div class="wm-det"><div class="wm-det-l">Känns som</div><div class="wm-det-v" id="wm-feel">–</div></div>
+        <div class="wm-det"><div class="wm-det-l">Sikt</div><div class="wm-det-v" id="wm-vis">–</div></div>
+      </div>
+      <div class="wm-sep2"></div>
+      <div class="wm-fc" id="wm-forecast"></div>
+    </div>
+    <div id="qr-mod">
+      <div id="qr-canvas"></div>
+      <div id="qr-label">Öppna i<br>mobilen</div>
+    </div>
+  </div>
+
+</div>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+<script>
+'use strict';
+
+/* ═══════════════════════════════════
+   CONFIG
+   Example URL:
+   kiosk.html
+     ?stops=9001,9180
+     &names=T-Centralen,Fridhemsplan
+     &colors=blue,red
+     &accent=%23003366
+     &accenttext=%23ffffff
+     &brand=https://example.com/logo.png
+     &brandname=Mitt+Företag
+     &brandcolor=true
+     &qr=https://mittforetag.se
+     &qrlabel=Besök+oss
+     &lat=59.33&lon=18.06
+     &proxy=https://sltavla.soxbox.uk/api/proxy
+     &info=https://mittforetag.se/kiosk/info.json
+═══════════════════════════════════ */
+const QS  = new URLSearchParams(location.search);
+const CFG = {
+  stops:      (QS.get('stops')||'9001').split(',').map(s=>s.trim()).filter(Boolean),
+  names:      (QS.get('names')||'').split(',').map(s=>s.trim()),
+  colors:     (QS.get('colors')||'').split(',').map(s=>s.trim()),
+  accent:     QS.get('accent')     || '#1a2535',
+  accenttext: QS.get('accenttext') || '#ffffff',
+  brand:      QS.get('brand')      || '',
+  brandname:  QS.get('brandname')  || '',
+  brandcolor: QS.get('brandcolor') === 'true',
+  qr:         QS.get('qr')         || 'https://sltavla.soxbox.uk',
+  qrlabel:    QS.get('qrlabel')    || 'Öppna i\nmobilen',
+  lat:        parseFloat(QS.get('lat')  || '59.3293'),
+  lon:        parseFloat(QS.get('lon')  || '18.0686'),
+  proxy:      QS.get('proxy')      || '/api/proxy',
+  infoUrl:    QS.get('info')       || '/info.json',
+  rows:       parseInt(QS.get('rows') || '0'),
+};
+
+/* ── Brand ───────────────────────── */
+function applyBrand() {
+  const r = document.documentElement;
+  r.style.setProperty('--accent',      CFG.accent);
+  r.style.setProperty('--accent-text', CFG.accenttext);
+
+  if (CFG.brand) {
+    const img = document.getElementById('brand-logo');
+    img.src = CFG.brand;
+    img.style.display = 'block';
+    if (CFG.brandcolor) img.classList.add('color');
+  }
+  if (CFG.brandname) {
+    document.getElementById('brand-name').textContent = CFG.brandname;
+    document.title = CFG.brandname + ' – Infoskärm';
+  }
+  document.getElementById('qr-label').innerHTML =
+    CFG.qrlabel.replace(/\n/g,'<br>');
+}
+
+/* ── Proxy ───────────────────────── */
+const P     = CFG.proxy + '?url=';
+const tlUrl = id => P + encodeURIComponent(`https://realtime-api.trafiklab.se/v1/departures/${id}`);
+const slUrl = id => P + encodeURIComponent(`https://transport.integration.sl.se/v1/sites/${id}/departures`);
+
+/* ── Icons ───────────────────────── */
+function modeIcon(m, px) {
+  const s = px||26;
+  const I = {
+    BUS:   `<svg viewBox="0 0 24 24" width="${s}" height="${s}"><rect width="24" height="24" rx="4" fill="#1a1a1a"/><path fill="white" fill-rule="evenodd" d="M6 6a2 2 0 012-2h8a2 2 0 012 2v11a2 2 0 01-1 1.732v.018a1.25 1.25 0 01-2.475.25h-5.05A1.25 1.25 0 017 18.75v-.018A2 2 0 016 17V6zm1 2a1 1 0 011-1h8a1 1 0 011 1v5.5a2 2 0 01-2 2H9a2 2 0 01-2-2V8zm2.5-3a.5.5 0 000 1h5a.5.5 0 000-1h-5zM15 17a.5.5 0 01.5-.5h1a.5.5 0 01.5.5v.5a.5.5 0 01-.5.5h-1a.5.5 0 01-.5-.5V17zm-7.5-.5a.5.5 0 00-.5.5v.5a.5.5 0 00.5.5h1a.5.5 0 00.5-.5V17a.5.5 0 00-.5-.5h-1z" clip-rule="evenodd"/></svg>`,
+    METRO: `<svg viewBox="0 0 24 24" width="${s}" height="${s}"><rect width="24" height="24" rx="4" fill="#1a1a1a"/><path fill="white" fill-rule="evenodd" d="M12 19a7 7 0 100-14 7 7 0 000 14zm8-7a8 8 0 11-16 0 8 8 0 0116 0zm-6.75-1.25h3.25v-2.5h-9v2.5h3.25v6.75h2.5v-6.75z" clip-rule="evenodd"/></svg>`,
+    TRAM:  `<svg viewBox="0 0 24 24" width="${s}" height="${s}"><rect width="24" height="24" rx="4" fill="#1a1a1a"/><path fill="white" fill-rule="evenodd" d="M9.5 4.5A.5.5 0 0110 4h4a.5.5 0 110 1h-4a.5.5 0 01-.5-.5zm.6 13.5h3.8l1.6 2H17l-1.803-2.254c.361-.202.659-.515.84-.907l1.126-2.436a6 6 0 00.425-3.76l-.585-2.764A3 3 0 0014.068 5.5H9.932a3 3 0 00-2.935 2.38l-.585 2.763a6 6 0 00.425 3.76l1.126 2.436c.181.392.479.705.84.907L7 20h1.5l1.6-2zm-.35-3.5a.75.75 0 100 1.5.75.75 0 000-1.5zm3.75.75a.75.75 0 111.5 0 .75.75 0 01-1.5 0zM9.574 7a1 1 0 00-.997 1.071l.333 4.674a.545.545 0 00.394.485 9.812 9.812 0 005.392 0 .545.545 0 00.394-.486l.334-4.673A1 1 0 0014.426 7H9.574z" clip-rule="evenodd"/></svg>`,
+    TRAIN: `<svg viewBox="0 0 24 24" width="${s}" height="${s}"><rect width="24" height="24" rx="4" fill="#1a1a1a"/><rect x="6.5" y="4" width="11" height="13" rx="2.5" stroke="white" stroke-width="1.8" fill="none"/><line x1="6.5" y1="10" x2="17.5" y2="10" stroke="white" stroke-width="1.5"/><circle cx="9.5" cy="7" r="1.2" fill="white"/><circle cx="14.5" cy="7" r="1.2" fill="white"/><circle cx="9" cy="19.5" r="2" fill="white"/><circle cx="15" cy="19.5" r="2" fill="white"/><line x1="9" y1="17" x2="9" y2="19.5" stroke="white" stroke-width="1.5"/><line x1="15" y1="17" x2="15" y2="19.5" stroke="white" stroke-width="1.5"/></svg>`,
+    FERRY: `<svg viewBox="0 0 24 24" width="${s}" height="${s}"><rect width="24" height="24" rx="4" fill="#1a1a1a"/><path fill="white" fill-rule="evenodd" d="M11 5v-.777c0-.075.078-.14.19-.158a5.083 5.083 0 011.62 0c.112.018.19.083.19.158V5h-2zM6.504 15L6.5 16c.45 0 .697-.101.97-.212.334-.136.706-.288 1.531-.288.826 0 1.348.303 1.818.576.383.222.732.424 1.181.424.45 0 .798-.202 1.183-.424.47-.273.994-.576 1.819-.576s1.196.152 1.53.288c.272.111.519.212.968.212v-1c.002 0 .882-1.993 1.295-2.927a.499.499 0 00-.273-.665L17.5 11V7.5a2 2 0 00-2-2H8.502a2 2 0 00-2 1.999L6.5 11l-1.019.408a.5.5 0 00-.271.666L6.504 15zm1.43 4.368c-.539.308-1.21.632-2.434.632H4v-2H5.5c.776 0 1.105-.176 1.441-.368l.095-.055C7.459 17.332 8.032 17 9 17c1.05 0 1.63.385 2.055.668l.004.003c.323.215.494.329.941.329.456 0 .647-.12.98-.338l.02-.013c.414-.27.994-.649 2-.649.928 0 1.503.329 1.916.565l.11.063c.346.194.694.372 1.474.372H20v2H18.5c-1.22 0-1.906-.322-2.452-.628l-.1-.056c-.396-.223-.56-.316-.948-.316-.41 0-.577.109-.928.338-.435.283-1.028.662-2.072.662-1.05 0-1.63-.385-2.055-.668l-.004-.003C9.618 19.114 9.447 19 9 19c-.425 0-.598.1-.98.319l-.086.05zM16 7H8v3.5L12 9l4 1.5V7z" clip-rule="evenodd"/></svg>`,
+  };
+  return I[m] || I['BUS'];
+}
+
+/* ── Badge ───────────────────────── */
+const MC = {10:'#0062a3',11:'#0062a3',13:'#d4171e',14:'#d4171e',17:'#1d7a3a',18:'#1d7a3a',19:'#1d7a3a'};
+const bg = (l,m) => (m==='METRO'||m==='SUBWAY') ? (MC[+l]||'#1d7a3a') : m==='BUS'?'#1a1a1a':m==='TRAM'?'#c0392b':m==='TRAIN'?'#8B4513':m==='FERRY'?'#1d8fc9':'#444';
+const br = m => (m==='METRO'||m==='SUBWAY')?'8px':m==='TRAM'?'50px':'3px';
+const nm = m => { const u=(m||'BUS').toUpperCase(); return ['FERRY','SHIP','BOAT','WATER'].includes(u)?'FERRY':u; };
+
+/* ── Fetch deps ──────────────────── */
+const CACHE = {};
+async function fetchDeps(id) {
+  const k = 'deps_'+id, c = CACHE[k];
+  if (c && Date.now()-c.ts<28000) return c.data;
+
+  const map_tl = d=>(d.departures||[]).map(x=>({
+    line:x.route?.designation||x.route?.name||'?',
+    dest:x.route?.direction||x.destination||'–',
+    mode:nm(x.route?.transport_mode),
+    scheduled:x.scheduled, realtime:x.realtime,
+    canceled:!!x.canceled, platform:x.stop_point?.designation||'',
+  }));
+  const map_sl = d=>(d.departures||[]).map(x=>({
+    line:x.line?.designation||x.line?.name||'?',
+    dest:x.destination||x.direction||'–',
+    mode:nm(x.line?.transport_mode),
+    scheduled:x.scheduled||x.time_tabled_date_time,
+    realtime:x.expected||x.realtime||x.estimated_date_time,
+    canceled:x.state==='CANCELLED', platform:x.stop_point?.designation||'',
+  }));
+
+  try {
+    const r = await fetch(tlUrl(id));
+    if (r.status===429) throw new Error('QUOTA');
+    if (!r.ok) throw new Error('TL '+r.status);
+    const data = map_tl(await r.json());
+    CACHE[k]={ts:Date.now(),data}; return data;
+  } catch(e){ if(e.message!=='QUOTA') console.warn('TL:',e.message); }
+
+  const r = await fetch(slUrl(id));
+  if (!r.ok) throw new Error('SL '+r.status);
+  const data = map_sl(await r.json());
+  CACHE[k]={ts:Date.now(),data}; return data;
+}
+
+/* ── Build boards ────────────────── */
+function buildBoards() {
+  const ct = document.getElementById('content');
+  ct.style.gridTemplateColumns = `repeat(${CFG.stops.length},1fr)`;
+  CFG.stops.forEach((id,i) => {
+    const color = CFG.colors[i]||'blue';
+    const name  = CFG.names[i] ||'Stop '+id;
+    const el = document.createElement('div');
+    el.className='module'; el.id='mod-'+i;
+    el.innerHTML=`
+      <div class="dep-header ${color}">
+        <div class="dh-icon" id="dhi-${i}">${modeIcon('BUS',40)}</div>
+        <div class="dh-info">
+          <div class="dh-stop">${name}</div>
+          <div class="dh-sub" id="dhs-${i}">Hämtar data…</div>
+        </div>
+        <div class="dh-upd" id="dhu-${i}"></div>
+      </div>
+      <div class="dep-col-hdr">
+        <div class="dch"></div>
+        <div class="dch">Destination</div>
+        <div class="dch r">Avgångstid</div>
+        <div class="dch r">Tid kvar</div>
+      </div>
+      <div class="dep-list" id="dl-${i}">${skels(7)}</div>`;
+    ct.appendChild(el);
+  });
+}
+
+function skels(n) {
+  return Array.from({length:n},()=>`
+    <div class="dep-skel">
+      <div class="skel" style="width:46px;height:26px;border-radius:3px"></div>
+      <div class="skel" style="width:${40+(Math.random()*38|0)}%"></div>
+      <div class="skel" style="width:52px;margin-left:auto"></div>
+      <div class="skel" style="width:44px;margin-left:auto"></div>
+    </div>`).join('');
+}
+
+/* ── Refresh board ───────────────── */
+async function refresh(i) {
+  const id = CFG.stops[i];
+  const dl = document.getElementById('dl-'+i);
+  if (!dl) return;
+  try {
+    const deps = await fetchDeps(id);
+
+    // Dominant mode icon
+    const mc={}; deps.forEach(d=>{mc[d.mode]=(mc[d.mode]||0)+1;});
+    const dom=Object.keys(mc).sort((a,b)=>mc[b]-mc[a])[0]||'BUS';
+    const ie=document.getElementById('dhi-'+i); if(ie) ie.innerHTML=modeIcon(dom,40);
+
+    // Subtitle
+    const MSV={BUS:'Buss',METRO:'Tunnelbana',SUBWAY:'Tunnelbana',TRAM:'Spårvagn',TRAIN:'Tåg',FERRY:'Båt'};
+    const sub=[...new Set(deps.map(d=>d.mode))].map(m=>MSV[m]||m).join(' · ');
+    const se=document.getElementById('dhs-'+i); if(se) se.textContent=sub||id;
+    const ue=document.getElementById('dhu-'+i); if(ue) ue.textContent='Uppdaterad '+new Date().toTimeString().slice(0,5);
+
+    const lh=dl.offsetHeight||400, rh=Math.max(42,Math.min(66,lh/9));
+    const max=CFG.rows||Math.max(4,Math.floor(lh/rh));
+    const now=new Date();
+    const rows=deps
+      .map(d=>{const rt=d.realtime?new Date(d.realtime):null,sch=d.scheduled?new Date(d.scheduled):null;return{...d,rt,sch,t:rt||sch,diff:(rt||sch)?Math.round(((rt||sch)-now)/60000):999};})
+      .filter(d=>d.diff>=-1).sort((a,b)=>a.diff-b.diff).slice(0,max);
+
+    if(!rows.length){dl.innerHTML=`<div class="dep-state"><span>Inga avgångar</span></div>`;return;}
+
+    dl.innerHTML=rows.map((d,ri)=>{
+      const delay=(d.rt&&d.sch)?Math.round((d.rt-d.sch)/60000):0;
+      const clk=d.t?d.t.toTimeString().slice(0,5):'–';
+      const ox=delay>1&&d.sch?`<span class="dep-clock-x">${d.sch.toTimeString().slice(0,5)}</span>`:'';
+      let th='';
+      if(d.canceled) th=`<span class="dep-t soon">Inställd</span>`;
+      else if(d.diff<=0) th=`<span class="dep-t now">Nu</span>`;
+      else if(d.diff>60) th=`<span class="dep-t">${clk}</span>`;
+      else th=`<span class="dep-t ${d.diff<=2?'soon':''}">${d.diff} min</span>`;
+      if(delay>1&&!d.canceled) th+=`<div class="dep-delay">+${delay} min</div>`;
+      return `<div class="dep-row" style="animation-delay:${ri*14}ms">
+        <div class="dep-badge" style="background:${bg(d.line,d.mode)};border-radius:${br(d.mode)}">${d.line}</div>
+        <div class="dep-dest${d.canceled?' x':''}">${d.dest}</div>
+        <div class="dep-clock">${clk}${ox}</div>
+        <div class="dep-time-col">${th}</div>
+      </div>`;
+    }).join('');
+  } catch(e) {
+    dl.innerHTML=`<div class="dep-state"><span style="color:var(--c-soon)">Avgångar ej tillgängliga</span><span>${e.message}</span></div>`;
+  }
+}
+
+/* ── Weather ─────────────────────── */
+const WI={0:'☀️',1:'🌤',2:'⛅',3:'☁️',45:'🌫',48:'🌫',51:'🌦',53:'🌦',55:'🌧',61:'🌧',63:'🌧',65:'🌧',71:'🌨',73:'🌨',75:'❄️',77:'❄️',80:'🌦',81:'🌧',82:'⛈',85:'🌨',86:'❄️',95:'⛈',96:'⛈',99:'⛈'};
+const WD={0:'Klart',1:'Mestadels klart',2:'Delvis molnigt',3:'Mulet',45:'Dimma',48:'Rimfrostdimma',51:'Lätt duggregn',53:'Duggregn',55:'Kraftigt duggregn',61:'Lätt regn',63:'Regn',65:'Kraftigt regn',71:'Lätt snö',73:'Snö',75:'Kraftigt snöfall',77:'Snöflingor',80:'Regnskurar',81:'Kraftiga skurar',82:'Skyfall',95:'Åska',96:'Åska m. hagel',99:'Kraftig åska'};
+const DS=['Sön','Mån','Tis','Ons','Tor','Fre','Lör'];
+
+async function fetchWeather() {
+  try {
+    const r=await fetch(`https://api.open-meteo.com/v1/forecast?latitude=${CFG.lat}&longitude=${CFG.lon}&current=temperature_2m,relative_humidity_2m,apparent_temperature,weather_code,wind_speed_10m,visibility&daily=weather_code,temperature_2m_max,temperature_2m_min&timezone=Europe%2FStockholm&forecast_days=5`);
+    if(!r.ok) throw new Error('HTTP '+r.status);
+    const d=await r.json(), c=d.current, dl=d.daily;
+    const ico=WI[c.weather_code]||'🌡', desc=WD[c.weather_code]||'–';
+    const temp=Math.round(c.temperature_2m), feel=Math.round(c.apparent_temperature);
+    const wind=(Math.round(c.wind_speed_10m/3.6*10)/10).toFixed(1);
+    const hum=c.relative_humidity_2m, vis=c.visibility>=10000?'10+ km':(c.visibility/1000).toFixed(1)+' km';
+
+    // Topbar
+    document.getElementById('tb-w-icon').textContent=ico;
+    document.getElementById('tb-w-temp').textContent=temp+'°';
+    document.getElementById('tb-w-desc').textContent=desc;
+    document.getElementById('tb-w-wind').textContent=wind+' m/s';
+    document.getElementById('tb-weather').style.display='flex';
+
+    // Footer
+    document.getElementById('wm-icon').textContent=ico;
+    document.getElementById('wm-temp').textContent=temp;
+    document.getElementById('wm-desc').textContent=desc;
+    document.getElementById('wm-wind').textContent=wind+' m/s';
+    document.getElementById('wm-hum').textContent=hum+'%';
+    document.getElementById('wm-feel').textContent=feel+'°C';
+    document.getElementById('wm-vis').textContent=vis;
+    document.getElementById('wm-forecast').innerHTML=dl.time.slice(0,5).map((dt,i)=>{
+      const dd=new Date(dt+'T12:00:00'), lbl=i===0?'Idag':DS[dd.getDay()];
+      return `<div class="wm-fc-d"><div class="wm-fc-l">${lbl}</div><div class="wm-fc-i">${WI[dl.weather_code[i]]||'🌡'}</div><div class="wm-fc-t">${Math.round(dl.temperature_2m_max[i])}°/${Math.round(dl.temperature_2m_min[i])}°</div></div>`;
+    }).join('');
+  } catch(e){ console.warn('Väder:',e.message); document.getElementById('wm-desc').textContent='Väderdata ej tillgänglig'; }
+}
+
+/* ── Ticker ──────────────────────── */
+async function fetchTicker() {
+  let items;
+  try {
+    const r=await fetch(CFG.infoUrl+'?_='+(Date.now()/300000|0));
+    if(!r.ok) throw new Error(); items=await r.json();
+  } catch(e) {
+    items=[
+      {tag:'Info',  text:'Välkommen! Skanna QR-koden för mer information.'},
+      {tag:'SL',    text:'Avgångsinformation via Trafiklab · trafiklab.se · CC BY 4.0'},
+    ];
+  }
+  const inner=document.getElementById('ticker-inner');
+  inner.innerHTML=[...items,...items].map(it=>`<span class="ticker-item"><b>${it.tag}:</b> ${it.text}</span>`).join('');
+  requestAnimationFrame(()=>{
+    const half=inner.scrollWidth/2;
+    inner.style.animation=`ticker-scroll ${half/55}s linear infinite`;
+  });
+}
+
+/* ── QR ──────────────────────────── */
+function buildQR() {
+  const el=document.getElementById('qr-canvas');
+  el.style.cssText='width:68px;height:68px;overflow:hidden;background:white;border-radius:4px';
+  try { new QRCode(el,{text:CFG.qr,width:68,height:68,colorDark:'#000',colorLight:'#fff',correctLevel:QRCode.CorrectLevel.M}); }
+  catch(e){ el.innerHTML='<div style="width:68px;height:68px;background:#eee;display:flex;align-items:center;justify-content:center;font-size:9px;color:#666">QR</div>'; }
+}
+
+/* ── Clock ───────────────────────── */
+const MN=['jan','feb','mar','apr','maj','jun','jul','aug','sep','okt','nov','dec'];
+const DN=['Söndag','Måndag','Tisdag','Onsdag','Torsdag','Fredag','Lördag'];
+function tick() {
+  const n=new Date();
+  document.getElementById('tb-clock').textContent=String(n.getHours()).padStart(2,'0')+':'+String(n.getMinutes()).padStart(2,'0');
+  document.getElementById('tb-date').textContent=DN[n.getDay()]+' '+n.getDate()+' '+MN[n.getMonth()];
+}
+
+/* ── Init ────────────────────────── */
+function init() {
+  applyBrand();
+  buildBoards();
+  tick(); setInterval(tick,10000);
+  fetchWeather();
+  fetchTicker();
+  buildQR();
+  // Staggered initial load
+  CFG.stops.forEach((_,i)=>setTimeout(()=>refresh(i),i*900));
+  // 30s refresh, staggered
+  setInterval(()=>CFG.stops.forEach((_,i)=>setTimeout(()=>refresh(i),i*900)),30000);
+  // Weather every 10min
+  setInterval(fetchWeather,600000);
+  // Ticker every 5min
+  setInterval(fetchTicker,300000);
+}
+
+document.readyState==='loading'
+  ? document.addEventListener('DOMContentLoaded',init)
+  : init();
+</script>
+</body>
+</html>

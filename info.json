@@ -1,0 +1,14 @@
+[
+  {
+    "tag": "Info",
+    "text": "Välkommen! Skanna QR-koden för att öppna avgångstavlan i mobilen."
+  },
+  {
+    "tag": "SL",
+    "text": "Avgångsinformation tillhandahålls av Trafiklab · trafiklab.se · CC BY 4.0"
+  },
+  {
+    "tag": "Info",
+    "text": "Lägg till ditt eget meddelande här genom att redigera info.json"
+  }
+]
