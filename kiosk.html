@@ -39,8 +39,8 @@
   --metro-green: #1d7a3a;
   --c-now:       #3dba6a;
   --c-soon:      #e05050;
-  --gap:         10px;
-  --radius:      10px;
+  --gap:         18px;
+  --radius:      12px;
   --font:        'SL Gothic Text 2', system-ui, sans-serif;
 }
 
@@ -57,7 +57,7 @@ html, body {
 /* ── LAYOUT ──────────────────────────── */
 #app {
   display: grid;
-  grid-template-rows: 60px 40px 1fr auto;
+  grid-template-rows: 76px 56px 1fr auto;
   height: 100vh;
   width: 100vw;
   padding: var(--gap) var(--gap) 0;
@@ -80,8 +80,8 @@ html, body {
   min-width: 0;
 }
 #brand-logo {
-  height: 36px;
-  max-width: 160px;
+  height: 48px;
+  max-width: 200px;
   object-fit: contain;
   object-position: left center;
   flex-shrink: 0;
@@ -89,7 +89,7 @@ html, body {
 }
 #brand-logo.color { filter: none; }
 #brand-name {
-  font-size: clamp(1rem, 2vw, 1.5rem);
+  font-size: clamp(1.3rem, 2.5vw, 2rem);
   font-weight: 700;
   color: var(--accent-text);
   white-space: nowrap;
@@ -99,31 +99,31 @@ html, body {
 .tb-weather {
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: 10px;
   background: var(--accent-dim);
   border: 1px solid rgba(255,255,255,0.12);
   border-radius: 8px;
-  padding: 5px 14px;
+  padding: 7px 18px;
   flex-shrink: 0;
 }
-.tb-w-icon { font-size:1.1rem; line-height:1; }
-.tb-w-temp { font-size:1.05rem; font-weight:700; color:var(--accent-text); }
-.tb-w-desc { font-size:0.7rem; color:rgba(255,255,255,0.65); white-space:nowrap; }
-.tb-w-wind { font-size:0.68rem; color:rgba(255,255,255,0.5); white-space:nowrap; }
+.tb-w-icon  { font-size:1.4rem; line-height:1; }
+.tb-w-temp  { font-size:1.3rem; font-weight:700; color:var(--accent-text); }
+.tb-w-desc  { font-size:0.82rem; color:rgba(255,255,255,0.65); white-space:nowrap; }
+.tb-w-wind  { font-size:0.78rem; color:rgba(255,255,255,0.5); white-space:nowrap; }
 .tb-clock-wrap { text-align:right; flex-shrink:0; }
 #tb-clock {
-  font-size: 1.9rem;
+  font-size: 2.6rem;
   font-weight: 700;
   color: var(--accent-text);
   letter-spacing: 0.05em;
   line-height: 1;
 }
 #tb-date {
-  font-size: 0.62rem;
+  font-size: 0.75rem;
   color: rgba(255,255,255,0.55);
   letter-spacing: 0.06em;
   text-transform: uppercase;
-  margin-top: 1px;
+  margin-top: 2px;
 }
 
 /* ── TICKER ──────────────────────────── */
@@ -133,18 +133,18 @@ html, body {
   border-radius: var(--radius);
   overflow: hidden;
   margin-bottom: var(--gap);
-  height: 40px;
+  height: 56px;
   flex-shrink: 0;
   box-shadow: 0 2px 10px rgba(0,0,0,0.3);
 }
 .ticker-tag {
   background: rgba(0,0,0,0.3);
   color: rgba(255,255,255,0.65);
-  font-size: 0.6rem;
+  font-size: 0.7rem;
   font-weight: 700;
-  letter-spacing: 2px;
+  letter-spacing: 2.5px;
   text-transform: uppercase;
-  padding: 0 16px;
+  padding: 0 22px;
   display: flex;
   align-items: center;
   flex-shrink: 0;
@@ -161,8 +161,8 @@ html, body {
   mask-image: linear-gradient(to right,transparent 0%,black 2%,black 98%,transparent 100%);
 }
 .ticker-inner { display:flex; white-space:nowrap; }
-.ticker-item  { font-size:0.8rem; color:rgba(255,255,255,0.72); padding:0 44px; flex-shrink:0; }
-.ticker-item b { color:rgba(255,255,255,0.95); font-weight:600; }
+.ticker-item  { font-size:1.1rem; color:rgba(255,255,255,0.8); padding:0 56px; flex-shrink:0; }
+.ticker-item b { color:rgba(255,255,255,0.95); font-weight:700; }
 @keyframes ticker-scroll { 0%{transform:translateX(0)} 100%{transform:translateX(-50%)} }
 
 /* ── CONTENT (SL modules) ────────────── */
@@ -187,8 +187,8 @@ html, body {
 .dep-header {
   display: flex;
   align-items: center;
-  gap: 12px;
-  padding: 10px 16px 8px;
+  gap: 14px;
+  padding: 14px 20px 12px;
   flex-shrink: 0;
   border-bottom: 3px solid rgba(255,255,255,0.15);
 }
@@ -199,32 +199,32 @@ html, body {
 .dep-header.dark   { background: #2a2d33; }
 .dh-icon   { flex-shrink:0; }
 .dh-info   { flex:1; min-width:0; }
-.dh-stop   { color:white; font-size:clamp(0.95rem,1.8vw,1.4rem); font-weight:700; letter-spacing:0.02em; text-transform:uppercase; line-height:1.1; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
-.dh-sub    { color:rgba(255,255,255,0.7); font-size:0.68rem; margin-top:2px; letter-spacing:0.04em; }
-.dh-upd    { font-size:0.58rem; color:rgba(255,255,255,0.4); flex-shrink:0; text-align:right; }
+.dh-stop   { color:white; font-size:clamp(1.2rem,2.2vw,1.9rem); font-weight:700; letter-spacing:0.02em; text-transform:uppercase; line-height:1.1; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+.dh-sub    { color:rgba(255,255,255,0.7); font-size:0.82rem; margin-top:3px; letter-spacing:0.04em; }
+.dh-upd    { font-size:0.65rem; color:rgba(255,255,255,0.4); flex-shrink:0; text-align:right; }
 
 /* ── COL HEADERS ─────────────────────── */
 .dep-col-hdr {
   display: grid;
-  grid-template-columns: 46px 1fr 88px 70px;
-  gap: 8px;
-  padding: 4px 16px;
+  grid-template-columns: 60px 1fr 100px 90px;
+  gap: 10px;
+  padding: 6px 20px;
   background: var(--mod-surface);
   border-bottom: 1px solid var(--mod-border);
   flex-shrink: 0;
 }
-.dch { font-size:0.58rem; font-weight:700; letter-spacing:0.08em; text-transform:uppercase; color:var(--mod-text3); }
+.dch { font-size:0.65rem; font-weight:700; letter-spacing:0.08em; text-transform:uppercase; color:var(--mod-text3); }
 .dch.r { text-align:right; }
 
 /* ── DEP ROWS ────────────────────────── */
 .dep-list { flex:1; overflow:hidden; display:flex; flex-direction:column; }
 .dep-row {
   display: grid;
-  grid-template-columns: 46px 1fr 88px 70px;
+  grid-template-columns: 60px 1fr 100px 90px;
   align-items: center;
-  gap: 8px;
-  padding: 0 16px;
-  min-height: clamp(42px,5.5vh,66px);
+  gap: 10px;
+  padding: 0 20px;
+  min-height: clamp(56px,7vh,88px);
   border-bottom: 1px solid var(--mod-border);
   flex-shrink: 0;
   animation: rowIn 0.18s ease both;
@@ -233,19 +233,19 @@ html, body {
 .dep-row:nth-child(odd)  { background:var(--mod-bg); }
 .dep-row:nth-child(even) { background:var(--mod-surface); }
 .dep-row:last-child { border-bottom:none; }
-.dep-badge   { border-radius:3px; padding:3px 2px; font-size:clamp(0.82rem,1.2vw,1.05rem); font-weight:700; color:white; text-align:center; width:46px; line-height:1.3; }
-.dep-dest    { font-size:clamp(0.88rem,1.3vw,1.1rem); font-weight:500; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; color:var(--mod-text); }
+.dep-badge   { border-radius:4px; padding:5px 4px; font-size:clamp(1rem,1.5vw,1.35rem); font-weight:700; color:white; text-align:center; width:60px; line-height:1.3; }
+.dep-dest    { font-size:clamp(1.05rem,1.6vw,1.4rem); font-weight:500; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; color:var(--mod-text); }
 .dep-dest.x  { color:var(--c-soon); text-decoration:line-through; }
-.dep-clock   { font-size:clamp(0.8rem,1.2vw,1rem); color:var(--mod-text2); text-align:right; }
-.dep-clock-x { font-size:0.68rem; color:var(--mod-text3); text-decoration:line-through; margin-left:3px; }
-.dep-time-col { text-align:right; display:flex; flex-direction:column; align-items:flex-end; justify-content:center; gap:1px; }
-.dep-t       { font-size:clamp(0.95rem,1.5vw,1.2rem); font-weight:700; color:var(--mod-text); line-height:1.1; letter-spacing:0.02em; }
+.dep-clock   { font-size:clamp(0.95rem,1.4vw,1.2rem); color:var(--mod-text2); text-align:right; }
+.dep-clock-x { font-size:0.75rem; color:var(--mod-text3); text-decoration:line-through; margin-left:3px; }
+.dep-time-col { text-align:right; display:flex; flex-direction:column; align-items:flex-end; justify-content:center; gap:2px; }
+.dep-t       { font-size:clamp(1.1rem,1.7vw,1.5rem); font-weight:700; color:var(--mod-text); line-height:1.1; letter-spacing:0.02em; }
 .dep-t.now   { color:var(--c-now); }
 .dep-t.soon  { color:var(--c-soon); }
-.dep-delay   { font-size:0.6rem; color:var(--c-soon); font-weight:500; }
+.dep-delay   { font-size:0.7rem; color:var(--c-soon); font-weight:500; }
 
 /* ── SKELETON ────────────────────────── */
-.dep-skel { display:grid; grid-template-columns:46px 1fr 88px 70px; gap:8px; padding:0 16px; min-height:clamp(42px,5.5vh,66px); align-items:center; border-bottom:1px solid var(--mod-border); flex-shrink:0; }
+.dep-skel { display:grid; grid-template-columns:60px 1fr 100px 90px; gap:10px; padding:0 20px; min-height:clamp(56px,7vh,88px); align-items:center; border-bottom:1px solid var(--mod-border); flex-shrink:0; }
 .dep-skel:nth-child(odd)  { background:var(--mod-bg); }
 .dep-skel:nth-child(even) { background:var(--mod-surface); }
 .skel { border-radius:3px; background:linear-gradient(90deg,rgba(255,255,255,0.04) 25%,rgba(255,255,255,0.08) 50%,rgba(255,255,255,0.04) 75%); background-size:200% 100%; animation:shimmer 1.6s ease infinite; height:14px; }
@@ -267,29 +267,43 @@ html, body {
   background: var(--mod-bg);
   border-radius: var(--radius);
   display: flex;
-  align-items: center;
-  gap: 18px;
-  padding: 10px 20px;
+  flex-direction: column;
   box-shadow: 0 4px 16px rgba(0,0,0,0.3);
   overflow: hidden;
   min-width: 0;
 }
-.wm-main  { display:flex; align-items:center; gap:10px; flex-shrink:0; }
-.wm-icon  { font-size:2.2rem; line-height:1; }
-.wm-temp  { font-size:2rem; font-weight:700; color:var(--mod-text); line-height:1; }
-.wm-temp sup { font-size:0.85rem; color:var(--mod-text2); }
-.wm-desc  { font-size:0.7rem; color:var(--mod-text2); margin-top:3px; }
+.wm-heading {
+  font-size: 0.65rem;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--mod-text3);
+  padding: 10px 20px 0;
+}
+.wm-body {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  padding: 8px 20px 12px;
+  flex: 1;
+  overflow: hidden;
+}
+.wm-main  { display:flex; align-items:center; gap:12px; flex-shrink:0; }
+.wm-icon  { font-size:2.6rem; line-height:1; }
+.wm-temp  { font-size:2.4rem; font-weight:700; color:var(--mod-text); line-height:1; }
+.wm-temp sup { font-size:1rem; color:var(--mod-text2); }
+.wm-desc  { font-size:0.82rem; color:var(--mod-text2); margin-top:4px; }
 .wm-sep   { width:1px; background:var(--mod-border); align-self:stretch; flex-shrink:0; margin:4px 0; }
-.wm-dets  { display:flex; gap:14px; flex-shrink:0; }
-.wm-det   { display:flex; flex-direction:column; gap:2px; }
-.wm-det-l { font-size:0.56rem; font-weight:700; letter-spacing:0.07em; text-transform:uppercase; color:var(--mod-text3); }
-.wm-det-v { font-size:0.8rem; font-weight:500; color:var(--mod-text); }
+.wm-dets  { display:flex; gap:18px; flex-shrink:0; }
+.wm-det   { display:flex; flex-direction:column; gap:3px; }
+.wm-det-l { font-size:0.6rem; font-weight:700; letter-spacing:0.07em; text-transform:uppercase; color:var(--mod-text3); }
+.wm-det-v { font-size:0.95rem; font-weight:500; color:var(--mod-text); }
 .wm-sep2  { width:1px; background:var(--mod-border); align-self:stretch; flex-shrink:0; margin:4px 0; }
-.wm-fc    { display:flex; gap:8px; overflow:hidden; }
-.wm-fc-d  { display:flex; flex-direction:column; align-items:center; gap:3px; flex-shrink:0; min-width:42px; }
-.wm-fc-l  { font-size:0.58rem; color:var(--mod-text3); text-transform:uppercase; letter-spacing:0.03em; }
-.wm-fc-i  { font-size:1rem; line-height:1; }
-.wm-fc-t  { font-size:0.68rem; font-weight:600; color:var(--mod-text2); }
+.wm-fc    { display:flex; gap:10px; overflow:hidden; }
+.wm-fc-d  { display:flex; flex-direction:column; align-items:center; gap:4px; flex-shrink:0; min-width:48px; }
+.wm-fc-l  { font-size:0.65rem; color:var(--mod-text3); text-transform:uppercase; letter-spacing:0.03em; }
+.wm-fc-i  { font-size:1.2rem; line-height:1; }
+.wm-fc-t  { font-size:0.78rem; font-weight:600; color:var(--mod-text2); }
 
 /* QR */
 #qr-mod {
@@ -299,13 +313,13 @@ html, body {
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  padding: 10px 16px;
-  gap: 5px;
+  padding: 12px 20px;
+  gap: 7px;
   flex-shrink: 0;
   box-shadow: 0 4px 16px rgba(0,0,0,0.3);
 }
 #qr-canvas { border-radius:4px; }
-#qr-label  { font-size:0.58rem; color:var(--mod-text3); letter-spacing:0.05em; text-transform:uppercase; text-align:center; line-height:1.4; max-width:72px; }
+#qr-label  { font-size:0.65rem; color:var(--mod-text3); letter-spacing:0.05em; text-transform:uppercase; text-align:center; line-height:1.4; max-width:90px; }
 </style>
 </head>
 <body>
@@ -343,22 +357,25 @@ html, body {
   <!-- FOOTER -->
   <div id="footer">
     <div id="weather-mod">
-      <div class="wm-main">
-        <div class="wm-icon" id="wm-icon">⛅</div>
-        <div>
-          <div class="wm-temp"><span id="wm-temp">–</span><sup>°C</sup></div>
-          <div class="wm-desc" id="wm-desc">Hämtar väder…</div>
+      <div class="wm-heading">Väder</div>
+      <div class="wm-body">
+        <div class="wm-main">
+          <div class="wm-icon" id="wm-icon">⛅</div>
+          <div>
+            <div class="wm-temp"><span id="wm-temp">–</span><sup>°C</sup></div>
+            <div class="wm-desc" id="wm-desc">Hämtar väder…</div>
+          </div>
         </div>
+        <div class="wm-sep"></div>
+        <div class="wm-dets">
+          <div class="wm-det"><div class="wm-det-l">Vind</div><div class="wm-det-v" id="wm-wind">–</div></div>
+          <div class="wm-det"><div class="wm-det-l">Luftfukt.</div><div class="wm-det-v" id="wm-hum">–</div></div>
+          <div class="wm-det"><div class="wm-det-l">Känns som</div><div class="wm-det-v" id="wm-feel">–</div></div>
+          <div class="wm-det"><div class="wm-det-l">Sikt</div><div class="wm-det-v" id="wm-vis">–</div></div>
+        </div>
+        <div class="wm-sep2"></div>
+        <div class="wm-fc" id="wm-forecast"></div>
       </div>
-      <div class="wm-sep"></div>
-      <div class="wm-dets">
-        <div class="wm-det"><div class="wm-det-l">Vind</div><div class="wm-det-v" id="wm-wind">–</div></div>
-        <div class="wm-det"><div class="wm-det-l">Luftfukt.</div><div class="wm-det-v" id="wm-hum">–</div></div>
-        <div class="wm-det"><div class="wm-det-l">Känns som</div><div class="wm-det-v" id="wm-feel">–</div></div>
-        <div class="wm-det"><div class="wm-det-l">Sikt</div><div class="wm-det-v" id="wm-vis">–</div></div>
-      </div>
-      <div class="wm-sep2"></div>
-      <div class="wm-fc" id="wm-forecast"></div>
     </div>
     <div id="qr-mod">
       <div id="qr-canvas"></div>
@@ -499,7 +516,7 @@ function buildBoards() {
     el.className='module'; el.id='mod-'+i;
     el.innerHTML=`
       <div class="dep-header ${color}">
-        <div class="dh-icon" id="dhi-${i}">${modeIcon('BUS',40)}</div>
+        <div class="dh-icon" id="dhi-${i}">${modeIcon('BUS',48)}</div>
         <div class="dh-info">
           <div class="dh-stop">${name}</div>
           <div class="dh-sub" id="dhs-${i}">Hämtar data…</div>
@@ -520,10 +537,10 @@ function buildBoards() {
 function skels(n) {
   return Array.from({length:n},()=>`
     <div class="dep-skel">
-      <div class="skel" style="width:46px;height:26px;border-radius:3px"></div>
+      <div class="skel" style="width:60px;height:30px;border-radius:4px"></div>
       <div class="skel" style="width:${40+(Math.random()*38|0)}%"></div>
+      <div class="skel" style="width:60px;margin-left:auto"></div>
       <div class="skel" style="width:52px;margin-left:auto"></div>
-      <div class="skel" style="width:44px;margin-left:auto"></div>
     </div>`).join('');
 }
 
@@ -538,7 +555,7 @@ async function refresh(i) {
     // Dominant mode icon
     const mc={}; deps.forEach(d=>{mc[d.mode]=(mc[d.mode]||0)+1;});
     const dom=Object.keys(mc).sort((a,b)=>mc[b]-mc[a])[0]||'BUS';
-    const ie=document.getElementById('dhi-'+i); if(ie) ie.innerHTML=modeIcon(dom,40);
+    const ie=document.getElementById('dhi-'+i); if(ie) ie.innerHTML=modeIcon(dom,48);
 
     // Subtitle
     const MSV={BUS:'Buss',METRO:'Tunnelbana',SUBWAY:'Tunnelbana',TRAM:'Spårvagn',TRAIN:'Tåg',FERRY:'Båt'};
@@ -546,8 +563,8 @@ async function refresh(i) {
     const se=document.getElementById('dhs-'+i); if(se) se.textContent=sub||id;
     const ue=document.getElementById('dhu-'+i); if(ue) ue.textContent='Uppdaterad '+new Date().toTimeString().slice(0,5);
 
-    const lh=dl.offsetHeight||400, rh=Math.max(42,Math.min(66,lh/9));
-    const max=CFG.rows||Math.max(4,Math.floor(lh/rh));
+    const lh=dl.offsetHeight||400, rh=Math.max(56,Math.min(88,lh/7));
+    const max=CFG.rows||Math.min(5,Math.max(3,Math.floor(lh/rh)));
     const now=new Date();
     const rows=deps
       .map(d=>{const rt=d.realtime?new Date(d.realtime):null,sch=d.scheduled?new Date(d.scheduled):null;return{...d,rt,sch,t:rt||sch,diff:(rt||sch)?Math.round(((rt||sch)-now)/60000):999};})
@@ -630,16 +647,16 @@ async function fetchTicker() {
   inner.innerHTML=[...items,...items].map(it=>`<span class="ticker-item"><b>${it.tag}:</b> ${it.text}</span>`).join('');
   requestAnimationFrame(()=>{
     const half=inner.scrollWidth/2;
-    inner.style.animation=`ticker-scroll ${half/55}s linear infinite`;
+    inner.style.animation=`ticker-scroll ${half/45}s linear infinite`;
   });
 }
 
 /* ── QR ──────────────────────────── */
 function buildQR() {
   const el=document.getElementById('qr-canvas');
-  el.style.cssText='width:68px;height:68px;overflow:hidden;background:white;border-radius:4px';
-  try { new QRCode(el,{text:CFG.qr,width:68,height:68,colorDark:'#000',colorLight:'#fff',correctLevel:QRCode.CorrectLevel.M}); }
-  catch(e){ el.innerHTML='<div style="width:68px;height:68px;background:#eee;display:flex;align-items:center;justify-content:center;font-size:9px;color:#666">QR</div>'; }
+  el.style.cssText='width:88px;height:88px;overflow:hidden;background:white;border-radius:4px';
+  try { new QRCode(el,{text:CFG.qr,width:88,height:88,colorDark:'#000',colorLight:'#fff',correctLevel:QRCode.CorrectLevel.M}); }
+  catch(e){ el.innerHTML='<div style="width:88px;height:88px;background:#eee;display:flex;align-items:center;justify-content:center;font-size:9px;color:#666">QR</div>'; }
 }
 
 /* ── Clock ───────────────────────── */
