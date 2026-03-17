@@ -1,0 +1,582 @@
+<!DOCTYPE html>
+<html lang="sv">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Kiosk Admin — Infobandet</title>
+<style>
+@font-face {
+  font-family:'SL Gothic Text 2';
+  src: url('https://afde-slweb-prod-axgjc2gedaepaveg.z01.azurefd.net/styleguide/8.3.0/staticcss/slgothictext2-bold.woff2') format('woff2');
+  font-weight: 700;
+}
+@font-face {
+  font-family:'SL Gothic Text 2';
+  src: url('https://afde-slweb-prod-axgjc2gedaepaveg.z01.azurefd.net/styleguide/8.3.0/staticcss/slgothictext2-regular.woff2') format('woff2');
+  font-weight: 400;
+}
+
+*, *::before, *::after { margin:0; padding:0; box-sizing:border-box; }
+
+:root {
+  --blue:    #005b99;
+  --blue-bg: #e8f1f8;
+  --red:     #d4171e;
+  --green:   #1d7a3a;
+  --border:  #d8d8d8;
+  --text:    #111;
+  --text2:   #444;
+  --text3:   #888;
+  --bg:      #f0f2f5;
+  --card:    #ffffff;
+  --font:    'SL Gothic Text 2', system-ui, sans-serif;
+}
+@media (prefers-color-scheme: dark) {
+  :root {
+    --border:#2e2e2e; --text:#f0f0f0; --text2:#bbb; --text3:#666;
+    --bg:#111; --card:#1e1e1e; --blue-bg:#0a2a40;
+  }
+}
+
+body { font-family:var(--font); background:var(--bg); color:var(--text); min-height:100vh; }
+
+/* ── TOPBAR ── */
+.topbar {
+  background: var(--blue);
+  height: 52px;
+  display: flex;
+  align-items: center;
+  padding: 0 20px;
+  gap: 12px;
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+}
+.topbar svg { flex-shrink:0; }
+.topbar-title { color:white; font-size:1rem; font-weight:700; }
+.topbar-sub   { color:rgba(255,255,255,0.55); font-size:0.75rem; }
+.topbar-spacer { flex:1; }
+.status-badge {
+  font-size:0.72rem; font-weight:600;
+  background:rgba(255,255,255,0.15); border-radius:6px;
+  padding:4px 10px; color:rgba(255,255,255,0.7);
+  transition: all 0.2s;
+}
+.status-badge.ok  { background:rgba(61,186,106,0.25); color:#4ade80; }
+.status-badge.err { background:rgba(224,80,80,0.25);  color:#f87171; }
+
+/* ── LOCK ── */
+#lock {
+  min-height:calc(100vh - 52px);
+  display:flex; align-items:center; justify-content:center; padding:20px;
+}
+.lock-card {
+  background:var(--card); border:1px solid var(--border);
+  border-radius:12px; padding:36px 32px;
+  width:100%; max-width:360px;
+  box-shadow:0 4px 24px rgba(0,0,0,0.08);
+}
+.lock-icon {
+  width:48px; height:48px; background:var(--blue-bg);
+  border-radius:12px; display:flex; align-items:center; justify-content:center;
+  margin-bottom:18px;
+}
+.lock-title { font-size:1.3rem; font-weight:700; margin-bottom:4px; }
+.lock-sub   { font-size:0.82rem; color:var(--text3); margin-bottom:24px; }
+.form-label {
+  display:block; font-size:0.7rem; font-weight:700;
+  text-transform:uppercase; letter-spacing:0.06em;
+  color:var(--text2); margin-bottom:6px;
+}
+.form-input {
+  width:100%; border:2px solid var(--border); border-radius:8px;
+  padding:11px 14px; font-family:var(--font); font-size:0.95rem;
+  color:var(--text); background:var(--card); outline:none;
+  transition:border-color 0.15s; margin-bottom:14px;
+}
+.form-input:focus { border-color:var(--blue); }
+.err-msg { font-size:0.78rem; color:var(--red); margin-bottom:12px; display:none; }
+.err-msg.show { display:block; }
+.btn-primary {
+  background:var(--blue); color:white; border:none; border-radius:8px;
+  padding:12px 24px; font-family:var(--font); font-size:0.95rem; font-weight:700;
+  cursor:pointer; width:100%; transition:background 0.15s;
+}
+.btn-primary:hover { background:#004a80; }
+
+/* ── APP ── */
+#app { display:none; max-width:800px; margin:0 auto; padding:24px 16px 100px; }
+#app.show { display:block; }
+
+.page-title { font-size:1.6rem; font-weight:700; margin-bottom:4px; }
+.page-sub   { font-size:0.85rem; color:var(--text3); margin-bottom:24px; }
+
+/* ── KIOSK LINK ── */
+.kiosk-link-box {
+  background:var(--blue-bg); border:1px solid #aac4dc;
+  border-radius:10px; padding:12px 16px; margin-bottom:20px;
+  display:none;
+}
+.kiosk-link-box.show { display:block; }
+.kiosk-link-label { font-size:0.65rem; font-weight:700; text-transform:uppercase; letter-spacing:0.08em; color:var(--blue); margin-bottom:4px; }
+.kiosk-link-url   { font-size:0.82rem; color:var(--text2); word-break:break-all; }
+.kiosk-link-url a { color:var(--blue); }
+
+/* ── SECTION LABEL ── */
+.section-label {
+  font-size:0.68rem; font-weight:700; text-transform:uppercase;
+  letter-spacing:0.08em; color:var(--text3); margin-bottom:10px;
+}
+
+/* ── ITEMS ── */
+#items-list { display:flex; flex-direction:column; gap:10px; margin-bottom:16px; }
+
+.item-card {
+  background:var(--card); border:1px solid var(--border);
+  border-radius:10px; padding:14px 16px;
+  display:grid; grid-template-columns:100px 1fr auto;
+  gap:12px; align-items:start;
+  transition:box-shadow 0.15s, border-color 0.15s;
+  cursor:grab;
+}
+.item-card:hover { box-shadow:0 2px 10px rgba(0,0,0,0.07); }
+.item-card.dragging  { opacity:0.35; cursor:grabbing; }
+.item-card.drag-over { border-color:var(--blue); box-shadow:0 0 0 2px var(--blue-bg); }
+
+.item-col-label {
+  font-size:0.62rem; font-weight:700; text-transform:uppercase;
+  letter-spacing:0.06em; color:var(--text3); margin-bottom:5px;
+}
+.item-tag {
+  border:1.5px solid var(--border); border-radius:6px;
+  padding:7px 9px; font-family:var(--font); font-size:0.85rem;
+  color:var(--text); background:var(--card); outline:none; width:100%;
+  transition:border-color 0.15s;
+}
+.item-tag:focus { border-color:var(--blue); }
+.item-text {
+  border:1.5px solid var(--border); border-radius:6px;
+  padding:7px 10px; font-family:var(--font); font-size:0.92rem;
+  color:var(--text); background:var(--card); outline:none; width:100%;
+  resize:none; line-height:1.5; min-height:40px;
+  transition:border-color 0.15s;
+}
+.item-text:focus { border-color:var(--blue); }
+
+.item-actions { display:flex; flex-direction:column; gap:5px; padding-top:20px; }
+.btn-icon {
+  width:30px; height:30px; border:none; border-radius:6px; cursor:pointer;
+  display:flex; align-items:center; justify-content:center;
+  color:var(--text3); background:var(--bg);
+  transition:all 0.12s;
+}
+.btn-icon:hover { background:var(--border); color:var(--text); }
+.btn-icon.del:hover { background:#ffeaea; color:var(--red); }
+
+/* ── ADD ROW ── */
+.add-row {
+  display:flex; align-items:center; gap:10px;
+  background:var(--card); border:1.5px dashed var(--border);
+  border-radius:10px; padding:13px 16px; cursor:pointer;
+  color:var(--text3); font-size:0.85rem; font-weight:600;
+  transition:all 0.15s; margin-bottom:24px;
+}
+.add-row:hover { border-color:var(--blue); color:var(--blue); background:var(--blue-bg); }
+
+/* ── PREVIEW ── */
+.preview-wrap {
+  background:var(--card); border:1px solid var(--border);
+  border-radius:10px; padding:14px 16px;
+}
+.preview-ticker {
+  background:#0e1014; border-radius:8px; height:48px;
+  display:flex; align-items:center; overflow:hidden;
+}
+.preview-tag {
+  background:rgba(255,255,255,0.08); color:rgba(255,255,255,0.55);
+  font-size:0.6rem; font-weight:700; letter-spacing:2px; text-transform:uppercase;
+  padding:0 14px; height:100%; display:flex; align-items:center;
+  flex-shrink:0; border-right:1px solid rgba(255,255,255,0.06); white-space:nowrap;
+}
+.preview-scroll {
+  flex:1; overflow:hidden;
+  -webkit-mask-image:linear-gradient(to right,transparent 0%,black 3%,black 97%,transparent 100%);
+  mask-image:linear-gradient(to right,transparent 0%,black 3%,black 97%,transparent 100%);
+}
+.preview-inner { display:flex; white-space:nowrap; font-size:0.95rem; color:rgba(255,255,255,0.78); }
+.preview-inner b { color:white; font-weight:700; }
+@keyframes prev-scroll { 0%{transform:translateX(0)} 100%{transform:translateX(-50%)} }
+
+/* ── SAVE BAR ── */
+.save-bar {
+  position:fixed; bottom:0; left:0; right:0;
+  background:var(--card); border-top:1px solid var(--border);
+  padding:12px 20px; display:none; align-items:center; gap:12px;
+  box-shadow:0 -4px 16px rgba(0,0,0,0.06); z-index:10;
+}
+.save-bar.show { display:flex; }
+.save-hint { flex:1; font-size:0.78rem; color:var(--text3); }
+.save-hint b { color:var(--text2); }
+.btn-logout {
+  background:var(--card); color:var(--text2); border:1.5px solid var(--border);
+  border-radius:8px; padding:9px 16px; font-family:var(--font);
+  font-size:0.82rem; font-weight:600; cursor:pointer; transition:all 0.15s;
+}
+.btn-logout:hover { border-color:var(--red); color:var(--red); }
+.btn-save {
+  background:var(--blue); color:white; border:none; border-radius:8px;
+  padding:10px 24px; font-family:var(--font); font-size:0.88rem; font-weight:700;
+  cursor:pointer; display:flex; align-items:center; gap:8px; transition:background 0.15s;
+  min-width:140px; justify-content:center;
+}
+.btn-save:hover:not(:disabled) { background:#004a80; }
+.btn-save:disabled { background:var(--border); color:var(--text3); cursor:not-allowed; }
+.spinner {
+  width:14px; height:14px; border:2px solid rgba(255,255,255,0.3);
+  border-top-color:white; border-radius:50%; animation:spin 0.7s linear infinite; display:none;
+}
+.btn-save.saving .spinner { display:block; }
+.btn-save.saving .save-label { display:none; }
+@keyframes spin { to{transform:rotate(360deg)} }
+
+/* ── TOAST ── */
+.toast {
+  position:fixed; bottom:80px; right:20px; z-index:100;
+  background:#111; color:white; font-size:0.82rem; font-weight:600;
+  padding:10px 18px; border-radius:8px;
+  box-shadow:0 4px 20px rgba(0,0,0,0.2);
+  opacity:0; transform:translateY(8px);
+  transition:all 0.25s ease; pointer-events:none;
+}
+.toast.show { opacity:1; transform:translateY(0); }
+.toast.ok  { background:var(--green); }
+.toast.err { background:var(--red); }
+</style>
+</head>
+<body>
+
+<!-- TOPBAR -->
+<div class="topbar">
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 61 48" width="26" height="20">
+    <path d="M30.3 41.703a23.845 23.845 0 0 0 16.972-7.03 23.845 23.845 0 0 0 7.03-16.972v-.493h-2.815v.493c0 5.66-2.204 10.98-6.205 14.982A21.049 21.049 0 0 1 30.3 38.888c-5.66 0-10.98-2.203-14.982-6.205A21.048 21.048 0 0 1 9.113 17.7v-.493H6.298v.493a23.844 23.844 0 0 0 7.03 16.972 23.845 23.845 0 0 0 16.972 7.03zm0-38.888c8.208 0 14.886 6.678 14.886 14.886 0 8.209-6.678 14.887-14.886 14.887-8.208 0-14.887-6.678-14.887-14.887 0-8.208 6.679-14.886 14.887-14.886zm0 32.588c4.728 0 9.173-1.842 12.517-5.185A17.586 17.586 0 0 0 48 17.701c0-4.728-1.84-9.173-5.184-12.516A17.586 17.586 0 0 0 30.3 0a17.586 17.586 0 0 0-12.517 5.185A17.586 17.586 0 0 0 12.6 17.7c0 4.729 1.84 9.174 5.184 12.517A17.586 17.586 0 0 0 30.3 35.403zm27.485-18.195v.493c0 7.342-2.859 14.244-8.05 19.435-5.191 5.191-12.094 8.05-19.435 8.05-7.341 0-14.244-2.859-19.435-8.05-5.191-5.191-8.05-12.093-8.05-19.435v-.493H0v.493c0 4.09.801 8.058 2.382 11.795a30.197 30.197 0 0 0 6.493 9.63A30.2 30.2 0 0 0 30.3 48.002a30.2 30.2 0 0 0 21.425-8.875 30.199 30.199 0 0 0 6.493-9.63A30.113 30.113 0 0 0 60.6 17.7v-.493h-2.815zm-17.02 4.213H35.53v-11.22h-3.032v13.926h8.267v-2.706zm-15.191.247c-2.36 0-3.993-1.543-3.993-1.543l-1.686 2.074s2.178 2.12 5.621 2.12c3.07 0 5.055-1.686 5.055-4.294 0-2.732-2.168-3.636-4.511-4.205-2.718-.65-2.85-1.101-2.85-1.843 0-.812.686-1.316 1.791-1.316 1.732 0 3.085 1.013 3.085 1.013l1.707-2.104s-1.748-1.558-4.754-1.558c-2.837 0-4.744 1.678-4.744 4.175 0 2.64 1.71 3.57 4.664 4.284 2.696.623 2.696 1.162 2.696 1.785 0 .87-.798 1.412-2.081 1.412z" fill="white" fill-rule="evenodd"/>
+  </svg>
+  <span class="topbar-title">Kiosk Admin</span>
+  <span class="topbar-sub">— Infobandet</span>
+  <div class="topbar-spacer"></div>
+  <div class="status-badge" id="status">Inte inloggad</div>
+</div>
+
+<!-- LOCK SCREEN -->
+<div id="lock">
+  <div class="lock-card">
+    <div class="lock-icon">
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#005b99" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <rect x="3" y="11" width="18" height="11" rx="2"/>
+        <path d="M7 11V7a5 5 0 0 1 10 0v4"/>
+      </svg>
+    </div>
+    <div class="lock-title">Kiosk Admin</div>
+    <div class="lock-sub">Logga in för att redigera infobandets meddelanden</div>
+    <label class="form-label" for="pw">Lösenord</label>
+    <input class="form-input" type="password" id="pw" placeholder="Ange lösenord" autocomplete="current-password">
+    <div class="err-msg" id="pw-err">Fel lösenord — försök igen</div>
+    <button class="btn-primary" onclick="login()">Logga in</button>
+  </div>
+</div>
+
+<!-- APP -->
+<div id="app">
+  <div class="page-title">Infobandet</div>
+  <div class="page-sub">Meddelandena rullar i tickern på infoskärmen. Kiosken hämtar uppdateringar automatiskt var 5:e minut.</div>
+
+  <div class="kiosk-link-box" id="kiosk-box">
+    <div class="kiosk-link-label">Kiosk-URL</div>
+    <div class="kiosk-link-url" id="kiosk-url"></div>
+  </div>
+
+  <div class="section-label">Meddelanden</div>
+  <div id="items-list"></div>
+
+  <div class="add-row" onclick="addItem()">
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+    Lägg till meddelande
+  </div>
+
+  <div class="preview-wrap">
+    <div class="section-label" style="margin-bottom:10px">Förhandsvisning</div>
+    <div class="preview-ticker">
+      <div class="preview-tag">Aktuellt</div>
+      <div class="preview-scroll">
+        <div class="preview-inner" id="preview"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- SAVE BAR -->
+<div class="save-bar" id="save-bar">
+  <div class="save-hint">Sparar till <b>proxy /info</b> → info.json på servern</div>
+  <button class="btn-logout" onclick="logout()">Logga ut</button>
+  <button class="btn-save" id="save-btn" onclick="save()">
+    <div class="spinner"></div>
+    <span class="save-label">Spara ändringar</span>
+  </button>
+</div>
+
+<!-- TOAST -->
+<div class="toast" id="toast"></div>
+
+<script>
+'use strict';
+
+// ── CONFIG via URL-parametrar ──────────────────────────────
+// admin.html?proxy=https://sltavla.soxbox.uk/api/proxy&kiosk=https://svenskiosk.soxbox.uk
+const QS = new URLSearchParams(location.search);
+
+// Proxy-URL: samma proxy som kiosken använder
+// /info  → GET hämtar info.json
+// /info  → PUT sparar info.json (kräver X-Admin-Password header)
+const PROXY    = QS.get('proxy') || '/api/proxy';
+const INFO_GET = PROXY.replace(/\/proxy$/, '/info').replace(/\?.*/, '');
+const INFO_PUT = INFO_GET;
+const KIOSK    = QS.get('kiosk') || '';
+
+// Lösenord matchas mot ADMIN_PW env-variabel i proxy.js
+// Standard: kiosk2024
+let SESSION_PW = '';
+
+let items   = [];
+let dragSrc = null;
+
+// ── AUTH ───────────────────────────────────────────────────
+function login() {
+  const pw = document.getElementById('pw').value.trim();
+  if (!pw) return;
+  SESSION_PW = pw;
+  sessionStorage.setItem('kiosk_pw', pw);
+  showApp();
+}
+document.getElementById('pw').addEventListener('keydown', e => {
+  if (e.key === 'Enter') login();
+});
+function logout() {
+  sessionStorage.removeItem('kiosk_pw');
+  SESSION_PW = '';
+  location.reload();
+}
+
+// Auto-login from session
+const saved = sessionStorage.getItem('kiosk_pw');
+if (saved) { SESSION_PW = saved; showApp(); }
+
+// ── SHOW APP ───────────────────────────────────────────────
+async function showApp() {
+  document.getElementById('lock').style.display = 'none';
+  document.getElementById('app').classList.add('show');
+  document.getElementById('save-bar').classList.add('show');
+  document.getElementById('status').textContent = 'Inloggad';
+  document.getElementById('status').classList.add('ok');
+
+  if (KIOSK) {
+    document.getElementById('kiosk-box').classList.add('show');
+    document.getElementById('kiosk-url').innerHTML = `<a href="${KIOSK}" target="_blank">${KIOSK}</a>`;
+  }
+
+  await load();
+}
+
+// ── LOAD ───────────────────────────────────────────────────
+async function load() {
+  try {
+    const r = await fetch(INFO_GET + '?_=' + Date.now());
+    if (!r.ok) throw new Error('HTTP ' + r.status);
+    items = await r.json();
+    if (!Array.isArray(items)) items = [];
+  } catch(e) {
+    items = [];
+    toast('Kunde inte läsa info.json — börjar med tomt infobant', 'err');
+  }
+  render();
+  renderPreview();
+}
+
+// ── RENDER ─────────────────────────────────────────────────
+function render() {
+  const list = document.getElementById('items-list');
+  if (!items.length) {
+    list.innerHTML = `<div style="text-align:center;color:var(--text3);padding:32px;font-size:0.85rem;background:var(--card);border:1px solid var(--border);border-radius:10px">Inga meddelanden ännu — lägg till ett nedan</div>`;
+    return;
+  }
+  list.innerHTML = items.map((it, i) => `
+    <div class="item-card" id="card-${i}"
+      draggable="true"
+      ondragstart="dragStart(event,${i})"
+      ondragover="dragOver(event,${i})"
+      ondragleave="dragLeave(${i})"
+      ondrop="drop(event,${i})"
+      ondragend="dragEnd()">
+      <div>
+        <div class="item-col-label">Tagg</div>
+        <input class="item-tag" type="text" value="${h(it.tag)}"
+          oninput="items[${i}].tag=this.value;renderPreview()"
+          placeholder="Info">
+      </div>
+      <div>
+        <div class="item-col-label">Meddelande</div>
+        <textarea class="item-text"
+          oninput="items[${i}].text=this.value;renderPreview();autoH(this)"
+          placeholder="Skriv meddelande…">${h(it.text)}</textarea>
+      </div>
+      <div class="item-actions">
+        <button class="btn-icon" title="Flytta upp" onclick="move(${i},-1)">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><polyline points="18 15 12 9 6 15"/></svg>
+        </button>
+        <button class="btn-icon" title="Flytta ner" onclick="move(${i},1)">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><polyline points="6 9 12 15 18 9"/></svg>
+        </button>
+        <button class="btn-icon del" title="Ta bort" onclick="remove(${i})">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14H6L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/></svg>
+        </button>
+      </div>
+    </div>`).join('');
+
+  requestAnimationFrame(() => {
+    document.querySelectorAll('.item-text').forEach(autoH);
+  });
+}
+
+function autoH(el) {
+  el.style.height = 'auto';
+  el.style.height = el.scrollHeight + 'px';
+}
+
+// ── MUTATIONS ──────────────────────────────────────────────
+function addItem() {
+  items.push({ tag: 'Info', text: '' });
+  render();
+  renderPreview();
+  requestAnimationFrame(() => {
+    const txts = document.querySelectorAll('.item-text');
+    if (txts.length) txts[txts.length-1].focus();
+  });
+}
+function remove(i) {
+  items.splice(i, 1);
+  render();
+  renderPreview();
+}
+function move(i, dir) {
+  const j = i + dir;
+  if (j < 0 || j >= items.length) return;
+  [items[i], items[j]] = [items[j], items[i]];
+  render();
+  renderPreview();
+}
+
+// ── DRAG & DROP ────────────────────────────────────────────
+function dragStart(e, i) {
+  dragSrc = i;
+  document.getElementById('card-'+i).classList.add('dragging');
+  e.dataTransfer.effectAllowed = 'move';
+}
+function dragOver(e, i) {
+  e.preventDefault();
+  if (i !== dragSrc) document.getElementById('card-'+i).classList.add('drag-over');
+}
+function dragLeave(i) {
+  document.getElementById('card-'+i).classList.remove('drag-over');
+}
+function drop(e, i) {
+  e.preventDefault();
+  document.getElementById('card-'+i).classList.remove('drag-over');
+  if (dragSrc === null || dragSrc === i) return;
+  const moved = items.splice(dragSrc, 1)[0];
+  items.splice(i, 0, moved);
+  dragSrc = null;
+  render();
+  renderPreview();
+}
+function dragEnd() {
+  document.querySelectorAll('.item-card').forEach(c =>
+    c.classList.remove('dragging', 'drag-over'));
+  dragSrc = null;
+}
+
+// ── PREVIEW ────────────────────────────────────────────────
+function renderPreview() {
+  const el = document.getElementById('preview');
+  if (!items.length) { el.textContent = ''; return; }
+  const all = [...items, ...items];
+  el.innerHTML = all.map(it =>
+    `<span style="padding:0 36px"><b>${h(it.tag)}:</b> ${h(it.text)}</span>`
+  ).join('');
+  requestAnimationFrame(() => {
+    const half = el.scrollWidth / 2;
+    el.style.animation = 'none';
+    void el.offsetWidth;
+    el.style.animation = `prev-scroll ${Math.max(8, half / 50)}s linear infinite`;
+  });
+}
+
+// ── SAVE ───────────────────────────────────────────────────
+async function save() {
+  const btn = document.getElementById('save-btn');
+  btn.classList.add('saving');
+  btn.disabled = true;
+
+  const toSave = items.filter(it => it.text.trim());
+
+  try {
+    const r = await fetch(INFO_PUT, {
+      method: 'PUT',
+      headers: {
+        'Content-Type': 'application/json',
+        'X-Admin-Password': SESSION_PW,
+      },
+      body: JSON.stringify(toSave, null, 2),
+    });
+
+    if (r.status === 401) {
+      // Fel lösenord
+      sessionStorage.removeItem('kiosk_pw');
+      SESSION_PW = '';
+      toast('Fel lösenord — logga in igen', 'err');
+      setTimeout(() => location.reload(), 2000);
+      return;
+    }
+    if (!r.ok) throw new Error('HTTP ' + r.status);
+
+    toast('Sparat! Kiosken uppdateras inom 5 min ✓', 'ok');
+    items = toSave; // sync local state
+
+  } catch(e) {
+    // Fallback: ladda ner som fil
+    const blob = new Blob([JSON.stringify(toSave, null, 2)], { type: 'application/json' });
+    const a = document.createElement('a');
+    a.href = URL.createObjectURL(blob);
+    a.download = 'info.json';
+    a.click();
+    toast('Kunde inte spara till server — fil nedladdad istället', 'err');
+  } finally {
+    btn.classList.remove('saving');
+    btn.disabled = false;
+  }
+}
+
+// ── TOAST ──────────────────────────────────────────────────
+function toast(msg, type = 'ok') {
+  const el = document.getElementById('toast');
+  el.textContent = msg;
+  el.className = `toast ${type} show`;
+  clearTimeout(el._t);
+  el._t = setTimeout(() => el.classList.remove('show'), 4000);
+}
+
+// ── HELPERS ────────────────────────────────────────────────
+function h(s) {
+  return (s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+</script>
+</body>
+</html>
