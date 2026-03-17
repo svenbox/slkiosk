@@ -28,11 +28,10 @@ services:
 
 volumes:
   slkiosk-data:
-    name: slkiosk-data
+    external: true
 
 networks:
   slkiosk-net:
-    name: slkiosk-net
-    driver: bridge
+    external: true
   mediastack:
     external: true
