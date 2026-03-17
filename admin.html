@@ -4,6 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>slkiosk Admin</title>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css">
 <style>
 @font-face{font-family:'SL Gothic Text 2';src:url('https://afde-slweb-prod-axgjc2gedaepaveg.z01.azurefd.net/styleguide/8.3.0/staticcss/slgothictext2-bold.woff2') format('woff2');font-weight:700;}
 @font-face{font-family:'SL Gothic Text 2';src:url('https://afde-slweb-prod-axgjc2gedaepaveg.z01.azurefd.net/styleguide/8.3.0/staticcss/slgothictext2-regular.woff2') format('woff2');font-weight:400;}
@@ -142,7 +143,17 @@ body{font-family:var(--font);background:var(--bg);color:var(--text);min-height:1
 .stop-row { display:grid;grid-template-columns:1fr 90px 80px 36px;gap:8px;align-items:start; }
 .stop-row-headers { display:grid;grid-template-columns:1fr 90px 80px 36px;gap:8px;margin-bottom:4px; }
 
-/* ── LOCATION ROW ── */
+/* ── KIOSK MAP ── */
+.map-wrap { border-radius:10px;overflow:hidden;border:1.5px solid var(--border);margin-top:8px; }
+#kiosk-map { height:280px;width:100%;background:#e8e0d8; }
+.map-hint { font-size:0.75rem;color:var(--text3);margin-top:6px;display:flex;align-items:center;gap:5px; }
+.map-coords-display { font-size:0.72rem;color:var(--blue);font-weight:600;margin-left:auto; }
+
+/* ── WALK TOGGLE IN STOP ROW ── */
+.walk-toggle { display:flex;align-items:center;justify-content:center;gap:4px;font-size:0.72rem;color:var(--text3);cursor:pointer;user-select:none;white-space:nowrap; }
+.walk-toggle input { accent-color:var(--blue);cursor:pointer; }
+.stop-row { display:grid;grid-template-columns:1fr 90px 80px 52px 36px;gap:8px;align-items:start; }
+.stop-row-headers { display:grid;grid-template-columns:1fr 90px 80px 52px 36px;gap:8px;margin-bottom:4px; }
 .location-row { display:flex;gap:8px;align-items:flex-start; }
 .location-search-wrap { flex:1;position:relative; }
 .btn-geolocate { width:40px;height:36px;border:1.5px solid var(--border);border-radius:8px;background:var(--card);color:var(--text3);cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:all .15s; }
@@ -369,6 +380,22 @@ body{font-family:var(--font);background:var(--bg);color:var(--text);min-height:1
           <input type="hidden" id="cfg-lat">
           <input type="hidden" id="cfg-lon">
         </div>
+
+        <!-- KIOSK POSITION MAP -->
+        <div class="form-section">
+          <label class="form-label">Kioskens position</label>
+          <div class="form-hint" style="margin-bottom:8px">Klicka på kartan för att markera var kiosken befinner sig. Används för att beräkna gångtid till hållplatser.</div>
+          <div class="map-wrap">
+            <div id="kiosk-map"></div>
+          </div>
+          <div class="map-hint">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
+            Klicka för att flytta nålen
+            <span class="map-coords-display" id="map-coords-display"></span>
+          </div>
+          <input type="hidden" id="cfg-kiosk-lat">
+          <input type="hidden" id="cfg-kiosk-lon">
+        </div>
       </div>
 
       <!-- TAB: STOPS -->
@@ -379,6 +406,7 @@ body{font-family:var(--font);background:var(--bg);color:var(--text);min-height:1
           <div class="stop-row-label" style="text-align:left;grid-column:1/3">Hållplats</div>
           <div class="stop-row-label">Headerfärg</div>
           <div class="stop-row-label">Ikon</div>
+          <div class="stop-row-label">🚶</div>
           <div></div>
         </div>
         <div class="stops-list" id="stops-list"></div>
@@ -578,9 +606,16 @@ async function openEdit(slug) {
   document.getElementById('edit-kiosk-url').textContent = kioskUrl;
   document.getElementById('edit-kiosk-open').href = '/' + slug;
 
+  // Kiosk position
+  document.getElementById('cfg-kiosk-lat').value = editCfg.kioskLat || '';
+  document.getElementById('cfg-kiosk-lon').value = editCfg.kioskLon || '';
+
   document.querySelectorAll('.view').forEach(v=>v.classList.remove('active'));
   document.getElementById('view-edit').classList.add('active');
   switchTab('branding');
+
+  // Init map after view is visible
+  requestAnimationFrame(() => initKioskMap(editCfg.kioskLat, editCfg.kioskLon, editCfg.stopCoords));
 }
 
 // ── TABS ───────────────────────────────────────────────────
@@ -600,6 +635,7 @@ function renderStops() {
   const names    = editCfg.stopNames || [];
   const colors   = editCfg.colors    || [];
   const icons    = editCfg.icons     || [];
+  const walkStops= editCfg.walkStops || [];
 
   list.innerHTML = stops.map((id, i) => `
     <div class="stop-row" id="stop-row-${i}">
@@ -627,6 +663,9 @@ function renderStops() {
       <select class="stop-icon-sel" onchange="if(!editCfg.icons)editCfg.icons=[];editCfg.icons[${i}]=this.value">
         ${['','BUS','METRO','TRAM','TRAIN','FERRY'].map(ic=>`<option value="${ic}" ${(icons[i]||'')===ic?'selected':''}>${ic||'Auto'}</option>`).join('')}
       </select>
+      <label class="walk-toggle" title="Visa gångtid på kiosken">
+        <input type="checkbox" ${walkStops[i]?'checked':''} onchange="if(!editCfg.walkStops)editCfg.walkStops=[];editCfg.walkStops[${i}]=this.checked;updateMapStopMarkers()">
+      </label>
       <button class="btn-remove-stop" onclick="removeStop(${i})">
         <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
       </button>
@@ -682,7 +721,7 @@ async function getStopCache() {
   const r = await fetch(PROXY + '?url=' + encodeURIComponent('https://transport.integration.sl.se/v1/sites?expand=false'));
   const data = await r.json();
   // Keep only relevant fields to save memory
-  const slim = data.map(s => ({ id: s.id, name: s.name, note: s.note || '' }));
+  const slim = data.map(s => ({ id: s.id, name: s.name, note: s.note || '', lat: s.lat, lon: s.lon }));
   _stopCache = slim;
   try { localStorage.setItem('sl_stops_cache', JSON.stringify({ ts: Date.now(), data: slim })); } catch(e) {}
   return slim;
@@ -723,10 +762,17 @@ function renderStopDd(i, stops, dd) {
 }
 
 function pickStop(i, id, name) {
-  if (!editCfg.stops) editCfg.stops = [];
-  if (!editCfg.stopNames) editCfg.stopNames = [];
+  if (!editCfg.stops)      editCfg.stops      = [];
+  if (!editCfg.stopNames)  editCfg.stopNames  = [];
+  if (!editCfg.stopCoords) editCfg.stopCoords = [];
   editCfg.stops[i]     = id;
-  editCfg.stopNames[i] = name;
+  editCfg.stopNames[i] = name.split(' (')[0]; // strip note suffix
+
+  // Save stop coords from cache for walk time + map
+  const cached = _stopCache && _stopCache.find(s => String(s.id) === String(id));
+  if (cached && cached.lat && cached.lon) {
+    editCfg.stopCoords[i] = { lat: cached.lat, lon: cached.lon };
+  }
 
   // Hide search, show selected
   const wrap = document.getElementById(`stop-search-wrap-${i}`);
@@ -734,15 +780,16 @@ function pickStop(i, id, name) {
   const selName = document.getElementById(`stop-sel-name-${i}`);
   if (wrap) wrap.style.display = 'none';
   if (sel)  sel.classList.add('show');
-  if (selName) selName.textContent = name;
+  if (selName) selName.textContent = editCfg.stopNames[i];
 
-  // Update ID display
   const idSpan = sel?.querySelector('span:nth-child(3)');
   if (idSpan) idSpan.textContent = id;
 
-  // Close dropdown
   const dd = document.getElementById(`stop-dd-${i}`);
   if (dd) dd.classList.remove('open');
+
+  // Update map to show new stop marker
+  updateMapStopMarkers();
 }
 
 function clearStop(i) {
@@ -941,6 +988,10 @@ async function saveAll() {
       locationName: document.getElementById('cfg-location-search').value.trim() || editCfg.locationName || '',
       brandcolor: document.getElementById('cfg-brandcolor').checked,
       proxy:      'https://sltavla.soxbox.uk/api/proxy',
+      kioskLat:   parseFloat(document.getElementById('cfg-kiosk-lat').value)||null,
+      kioskLon:   parseFloat(document.getElementById('cfg-kiosk-lon').value)||null,
+      walkStops:  editCfg.walkStops || [],
+      stopCoords: editCfg.stopCoords || [],
     };
 
     // Upload logo if pending
@@ -1130,6 +1181,121 @@ document.addEventListener('click', e => {
     document.getElementById('location-dd')?.classList.remove('open');
   }
 });
+
+// ── KIOSK MAP (Leaflet) ────────────────────────────────────
+let _map = null;
+let _kioskMarker = null;
+let _stopMarkers = [];
+
+function initKioskMap(lat, lon, stopCoords) {
+  const defaultLat = lat || 59.3293;
+  const defaultLon = lon || 18.0686;
+
+  if (_map) {
+    _map.remove();
+    _map = null;
+    _kioskMarker = null;
+    _stopMarkers = [];
+  }
+
+  _map = L.map('kiosk-map', { zoomControl: true }).setView([defaultLat, defaultLon], 16);
+
+  L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+    attribution: '© OpenStreetMap',
+    maxZoom: 19,
+  }).addTo(_map);
+
+  // Kiosk marker (draggable red pin)
+  const kioskIcon = L.divIcon({
+    html: `<div style="width:28px;height:28px;background:#d4171e;border:3px solid white;border-radius:50% 50% 50% 0;transform:rotate(-45deg);box-shadow:0 2px 6px rgba(0,0,0,0.3)"></div>`,
+    iconSize: [28, 28], iconAnchor: [14, 28], className: ''
+  });
+
+  if (lat && lon) {
+    _kioskMarker = L.marker([lat, lon], { draggable: true, icon: kioskIcon })
+      .addTo(_map)
+      .bindTooltip('Kioskens position', { permanent: false });
+    _kioskMarker.on('dragend', onKioskMarkerDrag);
+    updateMapCoordsDisplay(lat, lon);
+  }
+
+  // Click on map to place/move kiosk marker
+  _map.on('click', e => {
+    const { lat, lng } = e.latlng;
+    if (_kioskMarker) {
+      _kioskMarker.setLatLng([lat, lng]);
+    } else {
+      _kioskMarker = L.marker([lat, lng], { draggable: true, icon: kioskIcon })
+        .addTo(_map)
+        .bindTooltip('Kioskens position', { permanent: false });
+      _kioskMarker.on('dragend', onKioskMarkerDrag);
+    }
+    saveKioskPos(lat, lng);
+  });
+
+  // Draw stop markers if coords saved
+  updateMapStopMarkers(stopCoords);
+}
+
+function onKioskMarkerDrag(e) {
+  const { lat, lng } = e.target.getLatLng();
+  saveKioskPos(lat, lng);
+}
+
+function saveKioskPos(lat, lon) {
+  document.getElementById('cfg-kiosk-lat').value = lat;
+  document.getElementById('cfg-kiosk-lon').value = lon;
+  if (!editCfg) return;
+  editCfg.kioskLat = lat;
+  editCfg.kioskLon = lon;
+  updateMapCoordsDisplay(lat, lon);
+  // Recompute walk times display
+  updateMapStopMarkers();
+}
+
+function updateMapCoordsDisplay(lat, lon) {
+  const el = document.getElementById('map-coords-display');
+  if (el) el.textContent = `${Number(lat).toFixed(5)}, ${Number(lon).toFixed(5)}`;
+}
+
+function updateMapStopMarkers(stopCoords) {
+  if (!_map) return;
+  // Remove old stop markers
+  _stopMarkers.forEach(m => _map.removeLayer(m));
+  _stopMarkers = [];
+
+  const coords = stopCoords || editCfg.stopCoords || [];
+  const names  = editCfg.stopNames || [];
+  const walks  = editCfg.walkStops || [];
+
+  coords.forEach((sc, i) => {
+    if (!sc || !sc.lat || !sc.lon) return;
+    const isWalk = walks[i];
+    const stopIcon = L.divIcon({
+      html: `<div style="background:${isWalk?'#005b99':'#888'};color:white;border:2px solid white;border-radius:4px;padding:2px 6px;font-size:11px;font-weight:700;white-space:nowrap;box-shadow:0 1px 4px rgba(0,0,0,0.3)">${h(names[i]||'Stop')}</div>`,
+      iconSize: null, iconAnchor: [0, 0], className: ''
+    });
+    const m = L.marker([sc.lat, sc.lon], { icon: stopIcon }).addTo(_map);
+    _stopMarkers.push(m);
+
+    // Draw line if walk enabled and kiosk pos set
+    if (isWalk && editCfg.kioskLat && editCfg.kioskLon) {
+      const line = L.polyline(
+        [[editCfg.kioskLat, editCfg.kioskLon], [sc.lat, sc.lon]],
+        { color:'#005b99', weight:2, dashArray:'5,5', opacity:0.6 }
+      ).addTo(_map);
+      _stopMarkers.push(line);
+    }
+  });
+}
+
+// Load Leaflet dynamically
+(function loadLeaflet() {
+  if (window.L) return;
+  const s = document.createElement('script');
+  s.src = 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js';
+  document.head.appendChild(s);
+})();
 
 // ── TOAST ──────────────────────────────────────────────────
 function toast(msg, type='ok') {
