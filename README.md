@@ -1,6 +1,6 @@
 # slkiosk v2
 
-Modulär infoskärm för storskärm och Raspberry Pi. Stöder flera kiosker per server, var och en med egen branding, hållplatser och infobands-innehåll. För tex skyltfönster, företag eller andra som vill ha en skärm för att synliggöra avgångstider för närliggande SL-hållplatser. 
+Modulär infoskärm för storskärm - gjord tex för att köra på en Raspberry Pi i kioskläge. Stöder flera kiosker per server, var och en med egen branding, hållplatser och infobands-innehåll. För tex skyltfönster, företag eller andra som vill ha en skärm för att synliggöra avgångstider för närliggande SL-hållplatser. 
 
 ## Innehåll
 
