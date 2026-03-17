@@ -57,7 +57,7 @@ html, body {
 /* ── LAYOUT ──────────────────────────── */
 #app {
   display: grid;
-  grid-template-rows: 76px 56px 1fr auto;
+  grid-template-rows: 76px 64px 1fr 200px;
   height: 100vh;
   width: 100vw;
   padding: var(--gap) var(--gap) 0;
@@ -133,18 +133,18 @@ html, body {
   border-radius: var(--radius);
   overflow: hidden;
   margin-bottom: var(--gap);
-  height: 56px;
+  height: 64px;
   flex-shrink: 0;
   box-shadow: 0 2px 10px rgba(0,0,0,0.3);
 }
 .ticker-tag {
   background: rgba(0,0,0,0.3);
   color: rgba(255,255,255,0.65);
-  font-size: 0.7rem;
+  font-size: 0.75rem;
   font-weight: 700;
   letter-spacing: 2.5px;
   text-transform: uppercase;
-  padding: 0 22px;
+  padding: 0 24px;
   display: flex;
   align-items: center;
   flex-shrink: 0;
@@ -161,7 +161,7 @@ html, body {
   mask-image: linear-gradient(to right,transparent 0%,black 2%,black 98%,transparent 100%);
 }
 .ticker-inner { display:flex; white-space:nowrap; }
-.ticker-item  { font-size:1.1rem; color:rgba(255,255,255,0.8); padding:0 56px; flex-shrink:0; }
+.ticker-item  { font-size:1.25rem; color:rgba(255,255,255,0.8); padding:0 64px; flex-shrink:0; }
 .ticker-item b { color:rgba(255,255,255,0.95); font-weight:700; }
 @keyframes ticker-scroll { 0%{transform:translateX(0)} 100%{transform:translateX(-50%)} }
 
@@ -273,37 +273,37 @@ html, body {
   min-width: 0;
 }
 .wm-heading {
-  font-size: 0.65rem;
+  font-size: 0.7rem;
   font-weight: 700;
   letter-spacing: 0.12em;
   text-transform: uppercase;
   color: var(--mod-text3);
-  padding: 10px 20px 0;
+  padding: 12px 24px 0;
 }
 .wm-body {
   display: flex;
   align-items: center;
-  gap: 20px;
-  padding: 8px 20px 12px;
+  gap: 24px;
+  padding: 10px 24px 14px;
   flex: 1;
   overflow: hidden;
 }
-.wm-main  { display:flex; align-items:center; gap:12px; flex-shrink:0; }
-.wm-icon  { font-size:2.6rem; line-height:1; }
-.wm-temp  { font-size:2.4rem; font-weight:700; color:var(--mod-text); line-height:1; }
-.wm-temp sup { font-size:1rem; color:var(--mod-text2); }
-.wm-desc  { font-size:0.82rem; color:var(--mod-text2); margin-top:4px; }
+.wm-main  { display:flex; align-items:center; gap:14px; flex-shrink:0; }
+.wm-icon  { font-size:3.4rem; line-height:1; }
+.wm-temp  { font-size:3.2rem; font-weight:700; color:var(--mod-text); line-height:1; }
+.wm-temp sup { font-size:1.2rem; color:var(--mod-text2); }
+.wm-desc  { font-size:0.95rem; color:var(--mod-text2); margin-top:5px; }
 .wm-sep   { width:1px; background:var(--mod-border); align-self:stretch; flex-shrink:0; margin:4px 0; }
-.wm-dets  { display:flex; gap:18px; flex-shrink:0; }
-.wm-det   { display:flex; flex-direction:column; gap:3px; }
-.wm-det-l { font-size:0.6rem; font-weight:700; letter-spacing:0.07em; text-transform:uppercase; color:var(--mod-text3); }
-.wm-det-v { font-size:0.95rem; font-weight:500; color:var(--mod-text); }
+.wm-dets  { display:flex; gap:20px; flex-shrink:0; }
+.wm-det   { display:flex; flex-direction:column; gap:4px; }
+.wm-det-l { font-size:0.62rem; font-weight:700; letter-spacing:0.07em; text-transform:uppercase; color:var(--mod-text3); }
+.wm-det-v { font-size:1.1rem; font-weight:500; color:var(--mod-text); }
 .wm-sep2  { width:1px; background:var(--mod-border); align-self:stretch; flex-shrink:0; margin:4px 0; }
-.wm-fc    { display:flex; gap:10px; overflow:hidden; }
-.wm-fc-d  { display:flex; flex-direction:column; align-items:center; gap:4px; flex-shrink:0; min-width:48px; }
-.wm-fc-l  { font-size:0.65rem; color:var(--mod-text3); text-transform:uppercase; letter-spacing:0.03em; }
-.wm-fc-i  { font-size:1.2rem; line-height:1; }
-.wm-fc-t  { font-size:0.78rem; font-weight:600; color:var(--mod-text2); }
+.wm-fc    { display:flex; gap:14px; overflow:hidden; }
+.wm-fc-d  { display:flex; flex-direction:column; align-items:center; gap:5px; flex-shrink:0; min-width:52px; }
+.wm-fc-l  { font-size:0.7rem; color:var(--mod-text3); text-transform:uppercase; letter-spacing:0.03em; }
+.wm-fc-i  { font-size:1.6rem; line-height:1; }
+.wm-fc-t  { font-size:0.88rem; font-weight:600; color:var(--mod-text2); }
 
 /* QR */
 #qr-mod {
@@ -313,13 +313,13 @@ html, body {
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  padding: 12px 20px;
-  gap: 7px;
+  padding: 14px 22px;
+  gap: 8px;
   flex-shrink: 0;
   box-shadow: 0 4px 16px rgba(0,0,0,0.3);
 }
 #qr-canvas { border-radius:4px; }
-#qr-label  { font-size:0.65rem; color:var(--mod-text3); letter-spacing:0.05em; text-transform:uppercase; text-align:center; line-height:1.4; max-width:90px; }
+#qr-label  { font-size:0.68rem; color:var(--mod-text3); letter-spacing:0.05em; text-transform:uppercase; text-align:center; line-height:1.4; max-width:90px; }
 </style>
 </head>
 <body>
@@ -411,6 +411,7 @@ const CFG = {
   stops:      (QS.get('stops')||'9001').split(',').map(s=>s.trim()).filter(Boolean),
   names:      (QS.get('names')||'').split(',').map(s=>s.trim()),
   colors:     (QS.get('colors')||'').split(',').map(s=>s.trim()),
+  icons:      (QS.get('icons')||'').split(',').map(s=>s.trim().toUpperCase()),
   accent:     QS.get('accent')     || '#1a2535',
   accenttext: QS.get('accenttext') || '#ffffff',
   brand:      QS.get('brand')      || '',
@@ -512,11 +513,12 @@ function buildBoards() {
   CFG.stops.forEach((id,i) => {
     const color = CFG.colors[i]||'blue';
     const name  = CFG.names[i] ||'Stop '+id;
+    const forcedIcon = CFG.icons[i] || null;
     const el = document.createElement('div');
     el.className='module'; el.id='mod-'+i;
     el.innerHTML=`
       <div class="dep-header ${color}">
-        <div class="dh-icon" id="dhi-${i}">${modeIcon('BUS',48)}</div>
+        <div class="dh-icon" id="dhi-${i}">${modeIcon(forcedIcon||'BUS',48)}</div>
         <div class="dh-info">
           <div class="dh-stop">${name}</div>
           <div class="dh-sub" id="dhs-${i}">Hämtar data…</div>
@@ -552,10 +554,13 @@ async function refresh(i) {
   try {
     const deps = await fetchDeps(id);
 
-    // Dominant mode icon
-    const mc={}; deps.forEach(d=>{mc[d.mode]=(mc[d.mode]||0)+1;});
-    const dom=Object.keys(mc).sort((a,b)=>mc[b]-mc[a])[0]||'BUS';
-    const ie=document.getElementById('dhi-'+i); if(ie) ie.innerHTML=modeIcon(dom,48);
+    // Dominant mode icon — respektera tvingad ikon om satt
+    const forcedIcon = CFG.icons[i] || null;
+    if (!forcedIcon) {
+      const mc={}; deps.forEach(d=>{mc[d.mode]=(mc[d.mode]||0)+1;});
+      const dom=Object.keys(mc).sort((a,b)=>mc[b]-mc[a])[0]||'BUS';
+      const ie=document.getElementById('dhi-'+i); if(ie) ie.innerHTML=modeIcon(dom,48);
+    }
 
     // Subtitle
     const MSV={BUS:'Buss',METRO:'Tunnelbana',SUBWAY:'Tunnelbana',TRAM:'Spårvagn',TRAIN:'Tåg',FERRY:'Båt'};
@@ -563,8 +568,8 @@ async function refresh(i) {
     const se=document.getElementById('dhs-'+i); if(se) se.textContent=sub||id;
     const ue=document.getElementById('dhu-'+i); if(ue) ue.textContent='Uppdaterad '+new Date().toTimeString().slice(0,5);
 
-    const lh=dl.offsetHeight||400, rh=Math.max(56,Math.min(88,lh/7));
-    const max=CFG.rows||Math.min(5,Math.max(3,Math.floor(lh/rh)));
+    const lh=dl.offsetHeight||400, rh=Math.max(56,Math.min(88,lh/6));
+    const max=CFG.rows||Math.min(4,Math.max(3,Math.floor(lh/rh)));
     const now=new Date();
     const rows=deps
       .map(d=>{const rt=d.realtime?new Date(d.realtime):null,sch=d.scheduled?new Date(d.scheduled):null;return{...d,rt,sch,t:rt||sch,diff:(rt||sch)?Math.round(((rt||sch)-now)/60000):999};})
