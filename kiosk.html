@@ -562,7 +562,6 @@ async function refresh(i) {
 
     // Subtitle — använd tvingad ikon-typ om satt, annars dominant från data
     const MSV={BUS:'Buss',METRO:'Tunnelbana',SUBWAY:'Tunnelbana',TRAM:'Spårvagn',TRAIN:'Tåg',FERRY:'Båt'};
-    const forcedIcon = CFG.icons[i] || null;
     const displayMode = forcedIcon || [...new Set(deps.map(d=>d.mode))].sort((a,b)=>{
       const mc2={}; deps.forEach(d=>{mc2[d.mode]=(mc2[d.mode]||0)+1;}); return (mc2[b]||0)-(mc2[a]||0);
     })[0] || 'BUS';
