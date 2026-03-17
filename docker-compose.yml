@@ -20,7 +20,7 @@ services:
     environment:
       - TL_API_KEY=${TL_API_KEY}
       - ADMIN_PW=${ADMIN_PW:-kiosk2024}
-      - INFO_PATH=/data/info.json
+      - DATA_DIR=/data/kiosks
     volumes:
       - slkiosk-data:/data
     networks:

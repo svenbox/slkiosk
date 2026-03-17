@@ -3,325 +3,397 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Kiosk Admin — Infobandet</title>
+<title>slkiosk Admin</title>
 <style>
-@font-face {
-  font-family:'SL Gothic Text 2';
-  src: url('https://afde-slweb-prod-axgjc2gedaepaveg.z01.azurefd.net/styleguide/8.3.0/staticcss/slgothictext2-bold.woff2') format('woff2');
-  font-weight: 700;
+@font-face{font-family:'SL Gothic Text 2';src:url('https://afde-slweb-prod-axgjc2gedaepaveg.z01.azurefd.net/styleguide/8.3.0/staticcss/slgothictext2-bold.woff2') format('woff2');font-weight:700;}
+@font-face{font-family:'SL Gothic Text 2';src:url('https://afde-slweb-prod-axgjc2gedaepaveg.z01.azurefd.net/styleguide/8.3.0/staticcss/slgothictext2-regular.woff2') format('woff2');font-weight:400;}
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box;}
+:root{
+  --blue:#005b99;--blue-bg:#e8f1f8;--blue-dark:#004a80;
+  --red:#d4171e;--green:#1d7a3a;--orange:#e8830a;
+  --border:#d8d8d8;--text:#111;--text2:#444;--text3:#888;
+  --bg:#efefef;--card:#ffffff;
+  --font:'SL Gothic Text 2',system-ui,sans-serif;
 }
-@font-face {
-  font-family:'SL Gothic Text 2';
-  src: url('https://afde-slweb-prod-axgjc2gedaepaveg.z01.azurefd.net/styleguide/8.3.0/staticcss/slgothictext2-regular.woff2') format('woff2');
-  font-weight: 400;
+@media(prefers-color-scheme:dark){
+  :root{--border:#2e2e2e;--text:#f0f0f0;--text2:#bbb;--text3:#666;--bg:#111;--card:#1e1e1e;--blue-bg:#0a2a40;}
 }
-
-*, *::before, *::after { margin:0; padding:0; box-sizing:border-box; }
-
-:root {
-  --blue:    #005b99;
-  --blue-bg: #e8f1f8;
-  --red:     #d4171e;
-  --green:   #1d7a3a;
-  --border:  #d8d8d8;
-  --text:    #111;
-  --text2:   #444;
-  --text3:   #888;
-  --bg:      #f0f2f5;
-  --card:    #ffffff;
-  --font:    'SL Gothic Text 2', system-ui, sans-serif;
-}
-@media (prefers-color-scheme: dark) {
-  :root {
-    --border:#2e2e2e; --text:#f0f0f0; --text2:#bbb; --text3:#666;
-    --bg:#111; --card:#1e1e1e; --blue-bg:#0a2a40;
-  }
-}
-
-body { font-family:var(--font); background:var(--bg); color:var(--text); min-height:100vh; }
+body{font-family:var(--font);background:var(--bg);color:var(--text);min-height:100vh;}
 
 /* ── TOPBAR ── */
-.topbar {
-  background: var(--blue);
-  height: 52px;
-  display: flex;
-  align-items: center;
-  padding: 0 20px;
-  gap: 12px;
-  position: sticky;
-  top: 0;
-  z-index: 10;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.2);
-}
-.topbar svg { flex-shrink:0; }
-.topbar-title { color:white; font-size:1rem; font-weight:700; }
-.topbar-sub   { color:rgba(255,255,255,0.55); font-size:0.75rem; }
-.topbar-spacer { flex:1; }
-.status-badge {
-  font-size:0.72rem; font-weight:600;
-  background:rgba(255,255,255,0.15); border-radius:6px;
-  padding:4px 10px; color:rgba(255,255,255,0.7);
-  transition: all 0.2s;
-}
-.status-badge.ok  { background:rgba(61,186,106,0.25); color:#4ade80; }
-.status-badge.err { background:rgba(224,80,80,0.25);  color:#f87171; }
+.topbar{background:var(--blue);height:52px;display:flex;align-items:center;padding:0 20px;gap:12px;position:sticky;top:0;z-index:50;box-shadow:0 2px 8px rgba(0,0,0,0.2);}
+.topbar svg{flex-shrink:0;}
+.tb-title{color:white;font-size:1rem;font-weight:700;}
+.tb-sub{color:rgba(255,255,255,0.55);font-size:0.75rem;}
+.tb-spacer{flex:1;}
+.tb-status{font-size:0.72rem;font-weight:600;background:rgba(255,255,255,0.15);border-radius:6px;padding:4px 10px;color:rgba(255,255,255,0.7);transition:all .2s;}
+.tb-status.ok{background:rgba(61,186,106,0.25);color:#4ade80;}
+.tb-status.err{background:rgba(224,80,80,0.25);color:#f87171;}
 
 /* ── LOCK ── */
-#lock {
-  min-height:calc(100vh - 52px);
-  display:flex; align-items:center; justify-content:center; padding:20px;
-}
-.lock-card {
-  background:var(--card); border:1px solid var(--border);
-  border-radius:12px; padding:36px 32px;
-  width:100%; max-width:360px;
-  box-shadow:0 4px 24px rgba(0,0,0,0.08);
-}
-.lock-icon {
-  width:48px; height:48px; background:var(--blue-bg);
-  border-radius:12px; display:flex; align-items:center; justify-content:center;
-  margin-bottom:18px;
-}
-.lock-title { font-size:1.3rem; font-weight:700; margin-bottom:4px; }
-.lock-sub   { font-size:0.82rem; color:var(--text3); margin-bottom:24px; }
-.form-label {
-  display:block; font-size:0.7rem; font-weight:700;
-  text-transform:uppercase; letter-spacing:0.06em;
-  color:var(--text2); margin-bottom:6px;
-}
-.form-input {
-  width:100%; border:2px solid var(--border); border-radius:8px;
-  padding:11px 14px; font-family:var(--font); font-size:0.95rem;
-  color:var(--text); background:var(--card); outline:none;
-  transition:border-color 0.15s; margin-bottom:14px;
-}
-.form-input:focus { border-color:var(--blue); }
-.err-msg { font-size:0.78rem; color:var(--red); margin-bottom:12px; display:none; }
-.err-msg.show { display:block; }
-.btn-primary {
-  background:var(--blue); color:white; border:none; border-radius:8px;
-  padding:12px 24px; font-family:var(--font); font-size:0.95rem; font-weight:700;
-  cursor:pointer; width:100%; transition:background 0.15s;
-}
-.btn-primary:hover { background:#004a80; }
+#lock{min-height:calc(100vh - 52px);display:flex;align-items:center;justify-content:center;padding:20px;}
+.lock-card{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:36px 32px;width:100%;max-width:360px;box-shadow:0 4px 24px rgba(0,0,0,0.08);}
+.lock-icon{width:48px;height:48px;background:var(--blue-bg);border-radius:12px;display:flex;align-items:center;justify-content:center;margin-bottom:18px;}
+.lock-title{font-size:1.3rem;font-weight:700;margin-bottom:4px;}
+.lock-sub{font-size:0.82rem;color:var(--text3);margin-bottom:24px;}
 
 /* ── APP ── */
-#app { display:none; max-width:800px; margin:0 auto; padding:24px 16px 100px; }
-#app.show { display:block; }
+#app{display:none;}
+#app.show{display:block;}
 
-.page-title { font-size:1.6rem; font-weight:700; margin-bottom:4px; }
-.page-sub   { font-size:0.85rem; color:var(--text3); margin-bottom:24px; }
+/* ── VIEWS ── */
+.view{display:none;}
+.view.active{display:block;}
+#view-edit{position:fixed;inset:0;overflow-y:auto;background:var(--bg);z-index:20;}
 
-/* ── KIOSK LINK ── */
-.kiosk-link-box {
-  background:var(--blue-bg); border:1px solid #aac4dc;
-  border-radius:10px; padding:12px 16px; margin-bottom:20px;
-  display:none;
-}
-.kiosk-link-box.show { display:block; }
-.kiosk-link-label { font-size:0.65rem; font-weight:700; text-transform:uppercase; letter-spacing:0.08em; color:var(--blue); margin-bottom:4px; }
-.kiosk-link-url   { font-size:0.82rem; color:var(--text2); word-break:break-all; }
-.kiosk-link-url a { color:var(--blue); }
+/* ── BOARDS LIST (same style as sltavla) ── */
+.boards-container{max-width:900px;margin:0 auto;padding:20px 16px 80px;}
+.boards-title{font-size:1.8rem;font-weight:700;margin-bottom:6px;letter-spacing:0.02em;text-transform:uppercase;}
+.boards-sub{font-size:0.85rem;color:var(--text3);margin-bottom:20px;}
+.boards-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:16px;}
 
-/* ── SECTION LABEL ── */
-.section-label {
-  font-size:0.68rem; font-weight:700; text-transform:uppercase;
-  letter-spacing:0.08em; color:var(--text3); margin-bottom:10px;
-}
+/* ── KIOSK CARD ── */
+.kiosk-card{background:var(--card);border-radius:4px;overflow:hidden;box-shadow:0 3px 12px rgba(0,0,0,0.12);border:2px solid var(--border);cursor:pointer;transition:box-shadow .15s,transform .15s;}
+.kiosk-card:hover{box-shadow:0 8px 24px rgba(0,0,0,0.18);transform:translateY(-2px);}
+.kiosk-stripe{padding:10px 14px 8px;display:flex;align-items:center;gap:10px;border-bottom:3px solid rgba(0,0,0,0.12);}
+.kiosk-name{color:white;font-size:1.15rem;font-weight:700;text-transform:uppercase;letter-spacing:0.01em;}
+.kiosk-slug{color:rgba(255,255,255,0.75);font-size:0.72rem;margin-top:1px;letter-spacing:0.03em;}
+.kiosk-body{padding:10px 14px;}
+.kiosk-url{font-size:0.75rem;color:var(--blue);word-break:break-all;margin-bottom:8px;}
+.kiosk-stops-preview{font-size:0.72rem;color:var(--text3);}
+.kiosk-footer{padding:6px 14px;display:flex;justify-content:space-between;align-items:center;border-top:1px solid var(--border);}
+.kiosk-footer-label{font-size:0.68rem;color:var(--text3);}
+.btn-open-kiosk{font-size:0.72rem;color:var(--blue);background:none;border:none;cursor:pointer;font-family:var(--font);font-weight:600;padding:2px 6px;border-radius:4px;transition:background .12s;}
+.btn-open-kiosk:hover{background:var(--blue-bg);}
 
-/* ── ITEMS ── */
-#items-list { display:flex; flex-direction:column; gap:10px; margin-bottom:16px; }
+/* ── ADD CARD ── */
+.add-card{background:var(--card);border:2px dashed var(--border);border-radius:6px;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:32px 20px;cursor:pointer;transition:all .15s;color:var(--text3);gap:8px;min-height:160px;}
+.add-card:hover{border-color:var(--blue);color:var(--blue);background:var(--blue-bg);}
+.add-card-icon{font-size:2rem;}
+.add-card-label{font-size:0.85rem;font-weight:600;}
 
-.item-card {
-  background:var(--card); border:1px solid var(--border);
-  border-radius:10px; padding:14px 16px;
-  display:grid; grid-template-columns:100px 1fr auto;
-  gap:12px; align-items:start;
-  transition:box-shadow 0.15s, border-color 0.15s;
-  cursor:grab;
-}
-.item-card:hover { box-shadow:0 2px 10px rgba(0,0,0,0.07); }
-.item-card.dragging  { opacity:0.35; cursor:grabbing; }
-.item-card.drag-over { border-color:var(--blue); box-shadow:0 0 0 2px var(--blue-bg); }
+/* ── NEW KIOSK MODAL ── */
+.modal-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.5);z-index:100;align-items:flex-end;justify-content:center;}
+.modal-overlay.open{display:flex;}
+.modal-sheet{background:var(--card);border-radius:16px 16px 0 0;padding:20px 20px 40px;width:100%;max-width:600px;max-height:90vh;overflow-y:auto;animation:slideUp .25s ease;}
+@keyframes slideUp{from{transform:translateY(100%)}to{transform:translateY(0)}}
+.modal-handle{width:40px;height:4px;background:var(--border);border-radius:2px;margin:0 auto 16px;}
+.modal-title{font-size:1.2rem;font-weight:700;margin-bottom:20px;}
 
-.item-col-label {
-  font-size:0.62rem; font-weight:700; text-transform:uppercase;
-  letter-spacing:0.06em; color:var(--text3); margin-bottom:5px;
-}
-.item-tag {
-  border:1.5px solid var(--border); border-radius:6px;
-  padding:7px 9px; font-family:var(--font); font-size:0.85rem;
-  color:var(--text); background:var(--card); outline:none; width:100%;
-  transition:border-color 0.15s;
-}
-.item-tag:focus { border-color:var(--blue); }
-.item-text {
-  border:1.5px solid var(--border); border-radius:6px;
-  padding:7px 10px; font-family:var(--font); font-size:0.92rem;
-  color:var(--text); background:var(--card); outline:none; width:100%;
-  resize:none; line-height:1.5; min-height:40px;
-  transition:border-color 0.15s;
-}
-.item-text:focus { border-color:var(--blue); }
+/* ── EDIT VIEW ── */
+.edit-topbar{background:var(--blue);height:52px;display:flex;align-items:center;padding:0 20px;gap:12px;position:sticky;top:0;z-index:10;}
+.edit-topbar-title{color:white;font-weight:700;font-size:1rem;flex:1;}
+.edit-container{max-width:700px;margin:0 auto;padding:24px 16px 120px;}
 
-.item-actions { display:flex; flex-direction:column; gap:5px; padding-top:20px; }
-.btn-icon {
-  width:30px; height:30px; border:none; border-radius:6px; cursor:pointer;
-  display:flex; align-items:center; justify-content:center;
-  color:var(--text3); background:var(--bg);
-  transition:all 0.12s;
-}
-.btn-icon:hover { background:var(--border); color:var(--text); }
-.btn-icon.del:hover { background:#ffeaea; color:var(--red); }
+/* ── TABS ── */
+.tabs{display:flex;gap:0;border-bottom:2px solid var(--border);margin-bottom:24px;}
+.tab{padding:10px 20px;font-size:0.85rem;font-weight:700;cursor:pointer;color:var(--text3);border-bottom:3px solid transparent;margin-bottom:-2px;transition:all .15s;background:none;border-top:none;border-left:none;border-right:none;font-family:var(--font);}
+.tab.active{color:var(--blue);border-bottom-color:var(--blue);}
+.tab-panel{display:none;}
+.tab-panel.active{display:block;}
 
-/* ── ADD ROW ── */
-.add-row {
-  display:flex; align-items:center; gap:10px;
-  background:var(--card); border:1.5px dashed var(--border);
-  border-radius:10px; padding:13px 16px; cursor:pointer;
-  color:var(--text3); font-size:0.85rem; font-weight:600;
-  transition:all 0.15s; margin-bottom:24px;
-}
-.add-row:hover { border-color:var(--blue); color:var(--blue); background:var(--blue-bg); }
+/* ── FORM ── */
+.form-section{margin-bottom:20px;}
+.form-label{display:block;font-size:0.72rem;font-weight:700;text-transform:uppercase;letter-spacing:0.06em;color:var(--text2);margin-bottom:6px;}
+.form-hint{font-size:0.72rem;color:var(--text3);margin-top:4px;}
+.form-input{width:100%;border:2px solid var(--border);border-radius:8px;padding:10px 14px;font-family:var(--font);font-size:0.92rem;color:var(--text);background:var(--card);outline:none;transition:border-color .15s;}
+.form-input:focus{border-color:var(--blue);}
+.form-input::placeholder{color:var(--text3);}
 
-/* ── PREVIEW ── */
-.preview-wrap {
-  background:var(--card); border:1px solid var(--border);
-  border-radius:10px; padding:14px 16px;
-}
-.preview-ticker {
-  background:#0e1014; border-radius:8px; height:48px;
-  display:flex; align-items:center; overflow:hidden;
-}
-.preview-tag {
-  background:rgba(255,255,255,0.08); color:rgba(255,255,255,0.55);
-  font-size:0.6rem; font-weight:700; letter-spacing:2px; text-transform:uppercase;
-  padding:0 14px; height:100%; display:flex; align-items:center;
-  flex-shrink:0; border-right:1px solid rgba(255,255,255,0.06); white-space:nowrap;
-}
-.preview-scroll {
-  flex:1; overflow:hidden;
-  -webkit-mask-image:linear-gradient(to right,transparent 0%,black 3%,black 97%,transparent 100%);
-  mask-image:linear-gradient(to right,transparent 0%,black 3%,black 97%,transparent 100%);
-}
-.preview-inner { display:flex; white-space:nowrap; font-size:0.95rem; color:rgba(255,255,255,0.78); }
-.preview-inner b { color:white; font-weight:700; }
-@keyframes prev-scroll { 0%{transform:translateX(0)} 100%{transform:translateX(-50%)} }
+/* ── COLOR PICKER ── */
+.color-opts{display:flex;gap:8px;}
+.color-opt{width:32px;height:32px;border-radius:50%;cursor:pointer;border:3px solid transparent;transition:all .15s;}
+.color-opt.sel{border-color:#333;transform:scale(1.15);}
+@media(prefers-color-scheme:dark){.color-opt.sel{border-color:#fff;}}
+
+/* ── STOPS EDITOR ── */
+.stops-list{display:flex;flex-direction:column;gap:8px;margin-bottom:10px;}
+.stop-row{display:grid;grid-template-columns:1fr 1fr 100px 80px 40px;gap:8px;align-items:center;}
+.stop-row-label{font-size:0.62rem;color:var(--text3);text-align:center;}
+.stop-row-headers{display:grid;grid-template-columns:1fr 1fr 100px 80px 40px;gap:8px;margin-bottom:4px;}
+.stop-input{border:1.5px solid var(--border);border-radius:6px;padding:7px 9px;font-family:var(--font);font-size:0.85rem;color:var(--text);background:var(--card);outline:none;width:100%;transition:border-color .15s;}
+.stop-input:focus{border-color:var(--blue);}
+.stop-color-sel{border:1.5px solid var(--border);border-radius:6px;padding:6px 8px;font-family:var(--font);font-size:0.82rem;color:var(--text);background:var(--card);outline:none;width:100%;cursor:pointer;}
+.stop-icon-sel{border:1.5px solid var(--border);border-radius:6px;padding:6px 8px;font-family:var(--font);font-size:0.82rem;color:var(--text);background:var(--card);outline:none;width:100%;cursor:pointer;}
+.btn-remove-stop{width:32px;height:32px;border:none;border-radius:6px;cursor:pointer;background:var(--bg);color:var(--text3);display:flex;align-items:center;justify-content:center;transition:all .12s;}
+.btn-remove-stop:hover{background:#ffeaea;color:var(--red);}
+.btn-add-stop{display:flex;align-items:center;gap:6px;background:var(--card);border:1.5px dashed var(--border);border-radius:8px;padding:9px 14px;cursor:pointer;color:var(--text3);font-size:0.82rem;font-weight:600;font-family:var(--font);transition:all .15s;width:100%;}
+.btn-add-stop:hover{border-color:var(--blue);color:var(--blue);background:var(--blue-bg);}
+
+/* ── LOGO UPLOAD ── */
+.logo-zone{border:2px dashed var(--border);border-radius:10px;padding:24px;text-align:center;cursor:pointer;transition:all .15s;position:relative;}
+.logo-zone:hover,.logo-zone.drag-over{border-color:var(--blue);background:var(--blue-bg);}
+.logo-zone input{position:absolute;inset:0;opacity:0;cursor:pointer;width:100%;height:100%;}
+.logo-zone-icon{font-size:2rem;margin-bottom:8px;}
+.logo-zone-label{font-size:0.85rem;font-weight:600;color:var(--text2);}
+.logo-zone-hint{font-size:0.72rem;color:var(--text3);margin-top:4px;}
+.logo-preview-wrap{margin-top:16px;display:none;}
+.logo-preview-wrap.show{display:block;}
+.logo-preview-inner{background:#1a2535;border-radius:10px;padding:20px;display:flex;align-items:center;gap:16px;}
+.logo-preview-img{height:48px;max-width:200px;object-fit:contain;filter:brightness(0) invert(1);}
+.logo-preview-img.color{filter:none;}
+.logo-preview-label{font-size:0.75rem;color:rgba(255,255,255,0.5);}
+.logo-preview-name{font-size:1.1rem;font-weight:700;color:white;}
+.logo-actions{display:flex;gap:8px;margin-top:10px;align-items:center;}
+.logo-toggle{display:flex;align-items:center;gap:6px;font-size:0.78rem;color:var(--text2);cursor:pointer;user-select:none;}
+
+/* ── INFO TICKER ── */
+.info-list{display:flex;flex-direction:column;gap:8px;margin-bottom:12px;}
+.info-card{background:var(--card);border:1px solid var(--border);border-radius:8px;padding:12px 14px;display:grid;grid-template-columns:90px 1fr 32px;gap:10px;align-items:start;cursor:grab;}
+.info-card.dragging{opacity:.35;}
+.info-card.drag-over{border-color:var(--blue);box-shadow:0 0 0 2px var(--blue-bg);}
+.info-tag-input{border:1.5px solid var(--border);border-radius:6px;padding:6px 8px;font-family:var(--font);font-size:0.82rem;color:var(--text);background:var(--card);outline:none;width:100%;transition:border-color .15s;}
+.info-tag-input:focus{border-color:var(--blue);}
+.info-text-input{border:1.5px solid var(--border);border-radius:6px;padding:7px 9px;font-family:var(--font);font-size:0.88rem;color:var(--text);background:var(--card);outline:none;width:100%;resize:none;line-height:1.5;min-height:38px;transition:border-color .15s;}
+.info-text-input:focus{border-color:var(--blue);}
+.btn-del-info{width:28px;height:28px;border:none;border-radius:6px;cursor:pointer;background:var(--bg);color:var(--text3);display:flex;align-items:center;justify-content:center;padding-top:2px;transition:all .12s;}
+.btn-del-info:hover{background:#ffeaea;color:var(--red);}
+.add-info-row{display:flex;align-items:center;gap:8px;background:var(--card);border:1.5px dashed var(--border);border-radius:8px;padding:11px 14px;cursor:pointer;color:var(--text3);font-size:0.82rem;font-weight:600;transition:all .15s;}
+.add-info-row:hover{border-color:var(--blue);color:var(--blue);background:var(--blue-bg);}
+
+/* ── PREVIEW TICKER ── */
+.preview-wrap{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:14px;margin-top:16px;}
+.preview-label{font-size:0.62rem;font-weight:700;text-transform:uppercase;letter-spacing:0.08em;color:var(--text3);margin-bottom:8px;}
+.preview-ticker{background:#0e1014;border-radius:8px;height:48px;display:flex;align-items:center;overflow:hidden;}
+.preview-tag{background:rgba(255,255,255,0.08);color:rgba(255,255,255,0.55);font-size:0.6rem;font-weight:700;letter-spacing:2px;text-transform:uppercase;padding:0 14px;height:100%;display:flex;align-items:center;flex-shrink:0;border-right:1px solid rgba(255,255,255,0.06);white-space:nowrap;}
+.preview-scroll{flex:1;overflow:hidden;-webkit-mask-image:linear-gradient(to right,transparent 0%,black 3%,black 97%,transparent 100%);mask-image:linear-gradient(to right,transparent 0%,black 3%,black 97%,transparent 100%);}
+.preview-inner{display:flex;white-space:nowrap;font-size:0.92rem;color:rgba(255,255,255,0.78);}
+.preview-inner b{color:white;font-weight:700;}
+@keyframes prev-scroll{0%{transform:translateX(0)}100%{transform:translateX(-50%)}}
+
+/* ── DANGER ZONE ── */
+.danger-zone{background:#fff8f8;border:1px solid #ffd0d0;border-radius:10px;padding:16px 20px;margin-top:32px;}
+@media(prefers-color-scheme:dark){.danger-zone{background:#2a1515;border-color:#5a2020;}}
+.danger-title{font-size:0.72rem;font-weight:700;text-transform:uppercase;letter-spacing:0.08em;color:var(--red);margin-bottom:8px;}
+.danger-desc{font-size:0.82rem;color:var(--text3);margin-bottom:12px;line-height:1.5;}
+
+/* ── BUTTONS ── */
+.btn-primary{background:var(--blue);color:white;border:none;border-radius:8px;padding:11px 24px;font-family:var(--font);font-size:0.92rem;font-weight:700;cursor:pointer;transition:background .15s;display:inline-flex;align-items:center;gap:8px;}
+.btn-primary:hover:not(:disabled){background:var(--blue-dark);}
+.btn-primary:disabled{background:var(--border);color:var(--text3);cursor:not-allowed;}
+.btn-secondary{background:var(--card);color:var(--text);border:2px solid var(--border);border-radius:8px;padding:9px 20px;font-family:var(--font);font-size:0.88rem;font-weight:600;cursor:pointer;transition:all .15s;}
+.btn-secondary:hover{border-color:var(--blue);color:var(--blue);}
+.btn-danger{background:none;color:var(--red);border:2px solid var(--red);border-radius:8px;padding:9px 20px;font-family:var(--font);font-size:0.88rem;font-weight:600;cursor:pointer;transition:all .15s;}
+.btn-danger:hover{background:#ffeaea;}
+.spinner{width:14px;height:14px;border:2px solid rgba(255,255,255,0.3);border-top-color:white;border-radius:50%;animation:spin .7s linear infinite;display:none;}
+.btn-primary.saving .spinner{display:block;}
+.btn-primary.saving .btn-label{display:none;}
+@keyframes spin{to{transform:rotate(360deg)}}
 
 /* ── SAVE BAR ── */
-.save-bar {
-  position:fixed; bottom:0; left:0; right:0;
-  background:var(--card); border-top:1px solid var(--border);
-  padding:12px 20px; display:none; align-items:center; gap:12px;
-  box-shadow:0 -4px 16px rgba(0,0,0,0.06); z-index:10;
-}
-.save-bar.show { display:flex; }
-.save-hint { flex:1; font-size:0.78rem; color:var(--text3); }
-.save-hint b { color:var(--text2); }
-.btn-logout {
-  background:var(--card); color:var(--text2); border:1.5px solid var(--border);
-  border-radius:8px; padding:9px 16px; font-family:var(--font);
-  font-size:0.82rem; font-weight:600; cursor:pointer; transition:all 0.15s;
-}
-.btn-logout:hover { border-color:var(--red); color:var(--red); }
-.btn-save {
-  background:var(--blue); color:white; border:none; border-radius:8px;
-  padding:10px 24px; font-family:var(--font); font-size:0.88rem; font-weight:700;
-  cursor:pointer; display:flex; align-items:center; gap:8px; transition:background 0.15s;
-  min-width:140px; justify-content:center;
-}
-.btn-save:hover:not(:disabled) { background:#004a80; }
-.btn-save:disabled { background:var(--border); color:var(--text3); cursor:not-allowed; }
-.spinner {
-  width:14px; height:14px; border:2px solid rgba(255,255,255,0.3);
-  border-top-color:white; border-radius:50%; animation:spin 0.7s linear infinite; display:none;
-}
-.btn-save.saving .spinner { display:block; }
-.btn-save.saving .save-label { display:none; }
-@keyframes spin { to{transform:rotate(360deg)} }
+.save-bar{position:fixed;bottom:0;left:0;right:0;background:var(--card);border-top:1px solid var(--border);padding:12px 20px;display:flex;align-items:center;gap:12px;box-shadow:0 -4px 16px rgba(0,0,0,0.06);z-index:10;}
+.save-hint{flex:1;font-size:0.78rem;color:var(--text3);}
 
 /* ── TOAST ── */
-.toast {
-  position:fixed; bottom:80px; right:20px; z-index:100;
-  background:#111; color:white; font-size:0.82rem; font-weight:600;
-  padding:10px 18px; border-radius:8px;
-  box-shadow:0 4px 20px rgba(0,0,0,0.2);
-  opacity:0; transform:translateY(8px);
-  transition:all 0.25s ease; pointer-events:none;
-}
-.toast.show { opacity:1; transform:translateY(0); }
-.toast.ok  { background:var(--green); }
-.toast.err { background:var(--red); }
+.toast{position:fixed;bottom:72px;right:20px;z-index:200;background:#111;color:white;font-size:0.82rem;font-weight:600;padding:10px 18px;border-radius:8px;box-shadow:0 4px 20px rgba(0,0,0,0.2);opacity:0;transform:translateY(8px);transition:all .25s ease;pointer-events:none;}
+.toast.show{opacity:1;transform:translateY(0);}
+.toast.ok{background:var(--green);}
+.toast.err{background:var(--red);}
+
+/* ── MISC ── */
+.form-row-2{display:grid;grid-template-columns:1fr 1fr;gap:12px;}
 </style>
 </head>
 <body>
 
 <!-- TOPBAR -->
 <div class="topbar">
-  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 61 48" width="26" height="20">
-    <path d="M30.3 41.703a23.845 23.845 0 0 0 16.972-7.03 23.845 23.845 0 0 0 7.03-16.972v-.493h-2.815v.493c0 5.66-2.204 10.98-6.205 14.982A21.049 21.049 0 0 1 30.3 38.888c-5.66 0-10.98-2.203-14.982-6.205A21.048 21.048 0 0 1 9.113 17.7v-.493H6.298v.493a23.844 23.844 0 0 0 7.03 16.972 23.845 23.845 0 0 0 16.972 7.03zm0-38.888c8.208 0 14.886 6.678 14.886 14.886 0 8.209-6.678 14.887-14.886 14.887-8.208 0-14.887-6.678-14.887-14.887 0-8.208 6.679-14.886 14.887-14.886zm0 32.588c4.728 0 9.173-1.842 12.517-5.185A17.586 17.586 0 0 0 48 17.701c0-4.728-1.84-9.173-5.184-12.516A17.586 17.586 0 0 0 30.3 0a17.586 17.586 0 0 0-12.517 5.185A17.586 17.586 0 0 0 12.6 17.7c0 4.729 1.84 9.174 5.184 12.517A17.586 17.586 0 0 0 30.3 35.403zm27.485-18.195v.493c0 7.342-2.859 14.244-8.05 19.435-5.191 5.191-12.094 8.05-19.435 8.05-7.341 0-14.244-2.859-19.435-8.05-5.191-5.191-8.05-12.093-8.05-19.435v-.493H0v.493c0 4.09.801 8.058 2.382 11.795a30.197 30.197 0 0 0 6.493 9.63A30.2 30.2 0 0 0 30.3 48.002a30.2 30.2 0 0 0 21.425-8.875 30.199 30.199 0 0 0 6.493-9.63A30.113 30.113 0 0 0 60.6 17.7v-.493h-2.815zm-17.02 4.213H35.53v-11.22h-3.032v13.926h8.267v-2.706zm-15.191.247c-2.36 0-3.993-1.543-3.993-1.543l-1.686 2.074s2.178 2.12 5.621 2.12c3.07 0 5.055-1.686 5.055-4.294 0-2.732-2.168-3.636-4.511-4.205-2.718-.65-2.85-1.101-2.85-1.843 0-.812.686-1.316 1.791-1.316 1.732 0 3.085 1.013 3.085 1.013l1.707-2.104s-1.748-1.558-4.754-1.558c-2.837 0-4.744 1.678-4.744 4.175 0 2.64 1.71 3.57 4.664 4.284 2.696.623 2.696 1.162 2.696 1.785 0 .87-.798 1.412-2.081 1.412z" fill="white" fill-rule="evenodd"/>
-  </svg>
-  <span class="topbar-title">Kiosk Admin</span>
-  <span class="topbar-sub">— Infobandet</span>
-  <div class="topbar-spacer"></div>
-  <div class="status-badge" id="status">Inte inloggad</div>
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 61 48" width="26" height="20"><path d="M30.3 41.703a23.845 23.845 0 0 0 16.972-7.03 23.845 23.845 0 0 0 7.03-16.972v-.493h-2.815v.493c0 5.66-2.204 10.98-6.205 14.982A21.049 21.049 0 0 1 30.3 38.888c-5.66 0-10.98-2.203-14.982-6.205A21.048 21.048 0 0 1 9.113 17.7v-.493H6.298v.493a23.844 23.844 0 0 0 7.03 16.972 23.845 23.845 0 0 0 16.972 7.03zm0-38.888c8.208 0 14.886 6.678 14.886 14.886 0 8.209-6.678 14.887-14.886 14.887-8.208 0-14.887-6.678-14.887-14.887 0-8.208 6.679-14.886 14.887-14.886zm0 32.588c4.728 0 9.173-1.842 12.517-5.185A17.586 17.586 0 0 0 48 17.701c0-4.728-1.84-9.173-5.184-12.516A17.586 17.586 0 0 0 30.3 0a17.586 17.586 0 0 0-12.517 5.185A17.586 17.586 0 0 0 12.6 17.7c0 4.729 1.84 9.174 5.184 12.517A17.586 17.586 0 0 0 30.3 35.403zm27.485-18.195v.493c0 7.342-2.859 14.244-8.05 19.435-5.191 5.191-12.094 8.05-19.435 8.05-7.341 0-14.244-2.859-19.435-8.05-5.191-5.191-8.05-12.093-8.05-19.435v-.493H0v.493c0 4.09.801 8.058 2.382 11.795a30.197 30.197 0 0 0 6.493 9.63A30.2 30.2 0 0 0 30.3 48.002a30.2 30.2 0 0 0 21.425-8.875 30.199 30.199 0 0 0 6.493-9.63A30.113 30.113 0 0 0 60.6 17.7v-.493h-2.815zm-17.02 4.213H35.53v-11.22h-3.032v13.926h8.267v-2.706zm-15.191.247c-2.36 0-3.993-1.543-3.993-1.543l-1.686 2.074s2.178 2.12 5.621 2.12c3.07 0 5.055-1.686 5.055-4.294 0-2.732-2.168-3.636-4.511-4.205-2.718-.65-2.85-1.101-2.85-1.843 0-.812.686-1.316 1.791-1.316 1.732 0 3.085 1.013 3.085 1.013l1.707-2.104s-1.748-1.558-4.754-1.558c-2.837 0-4.744 1.678-4.744 4.175 0 2.64 1.71 3.57 4.664 4.284 2.696.623 2.696 1.162 2.696 1.785 0 .87-.798 1.412-2.081 1.412z" fill="white" fill-rule="evenodd"/></svg>
+  <span class="tb-title">slkiosk</span>
+  <span class="tb-sub">Admin</span>
+  <div class="tb-spacer"></div>
+  <div class="tb-status" id="tb-status">Inte inloggad</div>
 </div>
 
-<!-- LOCK SCREEN -->
+<!-- LOCK -->
 <div id="lock">
   <div class="lock-card">
     <div class="lock-icon">
-      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#005b99" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-        <rect x="3" y="11" width="18" height="11" rx="2"/>
-        <path d="M7 11V7a5 5 0 0 1 10 0v4"/>
-      </svg>
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#005b99" stroke-width="2" stroke-linecap="round"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
     </div>
-    <div class="lock-title">Kiosk Admin</div>
-    <div class="lock-sub">Logga in för att redigera infobandets meddelanden</div>
-    <label class="form-label" for="pw">Lösenord</label>
-    <input class="form-input" type="password" id="pw" placeholder="Ange lösenord" autocomplete="current-password">
-    <div class="err-msg" id="pw-err">Fel lösenord — försök igen</div>
-    <button class="btn-primary" onclick="login()">Logga in</button>
+    <div class="lock-title">Admin</div>
+    <div class="lock-sub">Logga in för att hantera kiosker</div>
+    <label class="form-label" style="margin-bottom:6px">Lösenord</label>
+    <input class="form-input" type="password" id="pw" placeholder="Ange lösenord" style="margin-bottom:14px">
+    <div style="font-size:0.78rem;color:var(--red);margin-bottom:12px;display:none" id="pw-err">Fel lösenord — försök igen</div>
+    <button class="btn-primary" style="width:100%" onclick="login()">Logga in</button>
   </div>
 </div>
 
 <!-- APP -->
 <div id="app">
-  <div class="page-title">Infobandet</div>
-  <div class="page-sub">Meddelandena rullar i tickern på infoskärmen. Kiosken hämtar uppdateringar automatiskt var 5:e minut.</div>
 
-  <div class="kiosk-link-box" id="kiosk-box">
-    <div class="kiosk-link-label">Kiosk-URL</div>
-    <div class="kiosk-link-url" id="kiosk-url"></div>
-  </div>
-
-  <div class="section-label">Meddelanden</div>
-  <div id="items-list"></div>
-
-  <div class="add-row" onclick="addItem()">
-    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
-    Lägg till meddelande
-  </div>
-
-  <div class="preview-wrap">
-    <div class="section-label" style="margin-bottom:10px">Förhandsvisning</div>
-    <div class="preview-ticker">
-      <div class="preview-tag">Aktuellt</div>
-      <div class="preview-scroll">
-        <div class="preview-inner" id="preview"></div>
-      </div>
+  <!-- VIEW: KIOSK LIST -->
+  <div class="view active" id="view-list">
+    <div class="boards-container">
+      <div class="boards-title">Mina kiosker</div>
+      <div class="boards-sub">Klicka på en kiosk för att redigera inställningar, branding och infobandet.</div>
+      <div class="boards-grid" id="kiosks-grid"></div>
     </div>
   </div>
+
+  <!-- VIEW: EDIT KIOSK -->
+  <div class="view" id="view-edit">
+    <div class="edit-topbar">
+      <button class="btn-secondary" style="padding:5px 12px;font-size:0.78rem" onclick="showList()">← Tillbaka</button>
+      <span class="edit-topbar-title" id="edit-topbar-title">Redigerar kiosk</span>
+      <a id="edit-preview-link" href="#" target="_blank" class="btn-secondary" style="padding:5px 12px;font-size:0.78rem;text-decoration:none">↗ Öppna kiosk</a>
+    </div>
+
+    <div class="edit-container">
+      <!-- TABS -->
+      <div class="tabs">
+        <button class="tab active" onclick="switchTab('branding')">Branding</button>
+        <button class="tab" onclick="switchTab('stops')">Hållplatser</button>
+        <button class="tab" onclick="switchTab('ticker')">Infobandet</button>
+      </div>
+
+      <!-- TAB: BRANDING -->
+      <div class="tab-panel active" id="tab-branding">
+        <div class="form-row-2">
+          <div class="form-section">
+            <label class="form-label">Namn på organisation</label>
+            <input class="form-input" type="text" id="cfg-brandname" placeholder="T.ex. Skarpnäcks Frisör">
+          </div>
+          <div class="form-section">
+            <label class="form-label">Bakgrundsfärg</label>
+            <input class="form-input" type="color" id="cfg-accent" value="#1a2535" style="height:44px;padding:4px 8px;cursor:pointer;">
+          </div>
+        </div>
+        <div class="form-row-2">
+          <div class="form-section">
+            <label class="form-label">QR-kod URL</label>
+            <input class="form-input" type="url" id="cfg-qr" placeholder="https://foretaget.se">
+          </div>
+          <div class="form-section">
+            <label class="form-label">Text under QR-kod</label>
+            <input class="form-input" type="text" id="cfg-qrlabel" placeholder="Boka tid">
+          </div>
+        </div>
+
+        <!-- LOGO UPLOAD -->
+        <div class="form-section">
+          <label class="form-label">Logotyp</label>
+          <div class="logo-zone" id="logo-zone">
+            <input type="file" id="logo-input" accept=".svg,.png,.webp,.jpg,.jpeg" onchange="handleLogoFile(this.files[0])">
+            <div class="logo-zone-icon">🖼</div>
+            <div class="logo-zone-label">Dra & släpp eller klicka för att ladda upp</div>
+            <div class="logo-zone-hint">SVG, PNG, WebP eller JPEG · Max 2 MB</div>
+          </div>
+          <div class="logo-preview-wrap" id="logo-preview-wrap">
+            <div class="logo-preview-inner" id="logo-preview-bg">
+              <img id="logo-preview-img" class="logo-preview-img" src="" alt="">
+              <div>
+                <div class="logo-preview-label">Förhandsvisning på kiosken</div>
+                <div class="logo-preview-name" id="logo-preview-name"></div>
+              </div>
+            </div>
+            <div class="logo-actions">
+              <label class="logo-toggle">
+                <input type="checkbox" id="cfg-brandcolor" onchange="updateLogoPreview()">
+                Originalfärger (avmarkera för vit logotyp)
+              </label>
+              <button class="btn-secondary" style="font-size:0.75rem;padding:5px 10px;margin-left:auto" onclick="removeLogo()">Ta bort logotyp</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- WEATHER LOCATION -->
+        <div class="form-row-2">
+          <div class="form-section">
+            <label class="form-label">Latitud (väder)</label>
+            <input class="form-input" type="number" step="0.0001" id="cfg-lat" placeholder="59.3293">
+          </div>
+          <div class="form-section">
+            <label class="form-label">Longitud (väder)</label>
+            <input class="form-input" type="number" step="0.0001" id="cfg-lon" placeholder="18.0686">
+          </div>
+        </div>
+        <div class="form-hint" style="margin-top:-12px;margin-bottom:16px">Hitta koordinater på <a href="https://www.latlong.net" target="_blank">latlong.net</a></div>
+      </div>
+
+      <!-- TAB: STOPS -->
+      <div class="tab-panel" id="tab-stops">
+        <div class="form-section">
+          <label class="form-label">Proxy-URL</label>
+          <input class="form-input" type="text" id="cfg-proxy" placeholder="https://sltavla.soxbox.uk/api/proxy">
+          <div class="form-hint">Lämna tomt för att använda sltavla.soxbox.uk:s proxy</div>
+        </div>
+
+        <label class="form-label">Hållplatser</label>
+        <div class="stop-row-headers">
+          <div class="stop-row-label" style="text-align:left">Stop-ID</div>
+          <div class="stop-row-label" style="text-align:left">Visningsnamn</div>
+          <div class="stop-row-label">Headerfärg</div>
+          <div class="stop-row-label">Ikon</div>
+          <div></div>
+        </div>
+        <div class="stops-list" id="stops-list"></div>
+        <button class="btn-add-stop" onclick="addStop()">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+          Lägg till hållplats
+        </button>
+        <div class="form-hint" style="margin-top:10px">Hitta Stop-ID på <a href="https://sltavla.soxbox.uk" target="_blank">sltavla.soxbox.uk</a> → skapa en tavla → ⚙ Debug</div>
+      </div>
+
+      <!-- TAB: TICKER -->
+      <div class="tab-panel" id="tab-ticker">
+        <div style="font-size:0.82rem;color:var(--text3);margin-bottom:16px;line-height:1.6">
+          Meddelandena rullar i infobandet på kiosken. Dra för att ändra ordning. Kiosken uppdateras inom 5 minuter efter att du sparat.
+        </div>
+        <div class="info-list" id="info-list"></div>
+        <div class="add-info-row" onclick="addInfoItem()">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+          Lägg till meddelande
+        </div>
+        <div class="preview-wrap">
+          <div class="preview-label">Förhandsvisning</div>
+          <div class="preview-ticker">
+            <div class="preview-tag">Aktuellt</div>
+            <div class="preview-scroll"><div class="preview-inner" id="preview-inner"></div></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- DANGER ZONE -->
+      <div class="danger-zone">
+        <div class="danger-title">Farlig zon</div>
+        <div class="danger-desc">Ta bort kiosken permanent. Alla inställningar och infobands-meddelanden raderas. Åtgärden kan inte ångras.</div>
+        <button class="btn-danger" onclick="deleteKiosk()">Ta bort kiosk</button>
+      </div>
+    </div>
+
+    <!-- SAVE BAR -->
+    <div class="save-bar">
+      <div class="save-hint" id="save-hint">Osparade ändringar</div>
+      <button class="btn-secondary" onclick="showList()">Avbryt</button>
+      <button class="btn-primary" id="save-btn" onclick="saveAll()">
+        <div class="spinner"></div>
+        <span class="btn-label">Spara alla ändringar</span>
+      </button>
+    </div>
+  </div>
+
 </div>
 
-<!-- SAVE BAR -->
-<div class="save-bar" id="save-bar">
-  <div class="save-hint">Sparar till <b>proxy /info</b> → info.json på servern</div>
-  <button class="btn-logout" onclick="logout()">Logga ut</button>
-  <button class="btn-save" id="save-btn" onclick="save()">
-    <div class="spinner"></div>
-    <span class="save-label">Spara ändringar</span>
-  </button>
+<!-- NEW KIOSK MODAL -->
+<div class="modal-overlay" id="new-modal" onclick="closeNewModal(event)">
+  <div class="modal-sheet">
+    <div class="modal-handle"></div>
+    <div class="modal-title">Ny kiosk</div>
+    <div class="form-section">
+      <label class="form-label">Namn på organisation</label>
+      <input class="form-input" type="text" id="new-name" placeholder="T.ex. Skarpnäcks Frisör">
+    </div>
+    <div class="form-section">
+      <label class="form-label">URL-adress (slug)</label>
+      <input class="form-input" type="text" id="new-slug" placeholder="skarpnacks_frisor">
+      <div class="form-hint">Används i URL:en: slkiosk.soxbox.uk/<strong id="slug-preview">…</strong></div>
+    </div>
+    <button class="btn-primary" style="width:100%" onclick="createKiosk()">Skapa kiosk</button>
+    <div style="height:8px"></div>
+    <button class="btn-secondary" style="width:100%" onclick="closeNewModal()">Avbryt</button>
+  </div>
 </div>
 
 <!-- TOAST -->
@@ -330,253 +402,433 @@ body { font-family:var(--font); background:var(--bg); color:var(--text); min-hei
 <script>
 'use strict';
 
-// ── CONFIG via URL-parametrar ──────────────────────────────
-// admin.html?proxy=https://sltavla.soxbox.uk/api/proxy&kiosk=https://svenskiosk.soxbox.uk
-const QS = new URLSearchParams(location.search);
-
-// Proxy-URL: samma proxy som kiosken använder
-// /info  → GET hämtar info.json
-// /info  → PUT sparar info.json (kräver X-Admin-Password header)
-const PROXY    = QS.get('proxy') || '/api/proxy';
-const INFO_GET = PROXY.replace(/\/proxy$/, '/info').replace(/\?.*/, '');
-const INFO_PUT = INFO_GET;
-const KIOSK    = QS.get('kiosk') || '';
-
-// Lösenord matchas mot ADMIN_PW env-variabel i proxy.js
-// Standard: kiosk2024
-let SESSION_PW = '';
-
-let items   = [];
-let dragSrc = null;
+const API = '/api';
+let PW = '';
+let editSlug = '';
+let editCfg  = {};
+let editInfo = [];
+let logoPending = null; // { data, type, ext } — not yet uploaded
+let dragInfoSrc = null;
 
 // ── AUTH ───────────────────────────────────────────────────
 function login() {
   const pw = document.getElementById('pw').value.trim();
   if (!pw) return;
-  SESSION_PW = pw;
-  sessionStorage.setItem('kiosk_pw', pw);
+  PW = pw;
+  sessionStorage.setItem('kiosk_admin_pw', pw);
   showApp();
 }
-document.getElementById('pw').addEventListener('keydown', e => {
-  if (e.key === 'Enter') login();
-});
-function logout() {
-  sessionStorage.removeItem('kiosk_pw');
-  SESSION_PW = '';
-  location.reload();
-}
+document.getElementById('pw').addEventListener('keydown', e => { if(e.key==='Enter') login(); });
 
-// Auto-login from session
-const saved = sessionStorage.getItem('kiosk_pw');
-if (saved) { SESSION_PW = saved; showApp(); }
-
-// ── SHOW APP ───────────────────────────────────────────────
-async function showApp() {
+function showApp() {
   document.getElementById('lock').style.display = 'none';
   document.getElementById('app').classList.add('show');
-  document.getElementById('save-bar').classList.add('show');
-  document.getElementById('status').textContent = 'Inloggad';
-  document.getElementById('status').classList.add('ok');
-
-  if (KIOSK) {
-    document.getElementById('kiosk-box').classList.add('show');
-    document.getElementById('kiosk-url').innerHTML = `<a href="${KIOSK}" target="_blank">${KIOSK}</a>`;
-  }
-
-  await load();
+  document.getElementById('tb-status').textContent = 'Inloggad';
+  document.getElementById('tb-status').classList.add('ok');
+  loadKiosks();
 }
 
-// ── LOAD ───────────────────────────────────────────────────
-async function load() {
-  try {
-    const r = await fetch(INFO_GET + '?_=' + Date.now());
-    if (!r.ok) throw new Error('HTTP ' + r.status);
-    items = await r.json();
-    if (!Array.isArray(items)) items = [];
-  } catch(e) {
-    items = [];
-    toast('Kunde inte läsa info.json — börjar med tomt infobant', 'err');
+const savedPw = sessionStorage.getItem('kiosk_admin_pw');
+if (savedPw) { PW = savedPw; showApp(); }
+
+// ── KIOSK LIST ─────────────────────────────────────────────
+async function loadKiosks() {
+  const r = await fetch(`${API}/kiosks`);
+  const kiosks = await r.json();
+  renderKiosks(kiosks);
+}
+
+function renderKiosks(kiosks) {
+  const grid = document.getElementById('kiosks-grid');
+  const STRIPE_COLORS = { blue:'#005b99',red:'#d4171e',green:'#1d7a3a',orange:'#e8830a',dark:'#333' };
+
+  grid.innerHTML = kiosks.map(k => {
+    const color = STRIPE_COLORS[k.accent] || k.accent || '#005b99';
+    return `
+    <div class="kiosk-card" onclick="openEdit('${k.slug}')">
+      <div class="kiosk-stripe" style="background:${color}">
+        <div>
+          <div class="kiosk-name">${h(k.brandname||k.slug)}</div>
+          <div class="kiosk-slug">/${k.slug}</div>
+        </div>
+      </div>
+      <div class="kiosk-body">
+        <div class="kiosk-url">slkiosk.soxbox.uk/${k.slug}</div>
+      </div>
+      <div class="kiosk-footer">
+        <span class="kiosk-footer-label">Klicka för att redigera</span>
+        <button class="btn-open-kiosk" onclick="event.stopPropagation();window.open('/${k.slug}','_blank')">Öppna ↗</button>
+      </div>
+    </div>`;
+  }).join('');
+
+  grid.innerHTML += `
+    <div class="add-card" onclick="openNewModal()">
+      <div class="add-card-icon">
+        <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+      </div>
+      <div class="add-card-label">Ny kiosk</div>
+    </div>`;
+}
+
+// ── VIEWS ──────────────────────────────────────────────────
+function showList() {
+  document.querySelectorAll('.view').forEach(v=>v.classList.remove('active'));
+  document.getElementById('view-list').classList.add('active');
+  loadKiosks();
+}
+
+async function openEdit(slug) {
+  editSlug = slug;
+  logoPending = null;
+
+  const [cfgR, infoR] = await Promise.all([
+    fetch(`${API}/kiosk/${slug}/config`),
+    fetch(`${API}/kiosk/${slug}/info`),
+  ]);
+  editCfg  = await cfgR.json();
+  editInfo = await infoR.json();
+
+  // Populate branding tab
+  document.getElementById('cfg-brandname').value = editCfg.brandname || '';
+  document.getElementById('cfg-accent').value    = editCfg.accent     || '#1a2535';
+  document.getElementById('cfg-qr').value        = editCfg.qr         || '';
+  document.getElementById('cfg-qrlabel').value   = (editCfg.qrlabel||'').replace(/\\n/g,'\n');
+  document.getElementById('cfg-lat').value       = editCfg.lat        || 59.3293;
+  document.getElementById('cfg-lon').value       = editCfg.lon        || 18.0686;
+  document.getElementById('cfg-brandcolor').checked = !!editCfg.brandcolor;
+
+  // Logo preview
+  if (editCfg.logoFile) {
+    showLogoPreview(`${API}/kiosk/${slug}/logo`, editCfg.brandcolor);
+  } else {
+    document.getElementById('logo-preview-wrap').classList.remove('show');
   }
-  render();
+
+  // Stops tab
+  renderStops();
+
+  // Ticker tab
+  renderInfoList();
   renderPreview();
+
+  // Edit topbar
+  document.getElementById('edit-topbar-title').textContent = editCfg.brandname || slug;
+  document.getElementById('edit-preview-link').href = '/' + slug;
+
+  document.querySelectorAll('.view').forEach(v=>v.classList.remove('active'));
+  document.getElementById('view-edit').classList.add('active');
+  switchTab('branding');
 }
 
-// ── RENDER ─────────────────────────────────────────────────
-function render() {
-  const list = document.getElementById('items-list');
-  if (!items.length) {
-    list.innerHTML = `<div style="text-align:center;color:var(--text3);padding:32px;font-size:0.85rem;background:var(--card);border:1px solid var(--border);border-radius:10px">Inga meddelanden ännu — lägg till ett nedan</div>`;
+// ── TABS ───────────────────────────────────────────────────
+function switchTab(name) {
+  document.querySelectorAll('.tab').forEach((t,i) => {
+    const names = ['branding','stops','ticker'];
+    t.classList.toggle('active', names[i] === name);
+  });
+  document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+  document.getElementById('tab-'+name).classList.add('active');
+}
+
+// ── STOPS ──────────────────────────────────────────────────
+function renderStops() {
+  const list = document.getElementById('stops-list');
+  const stops    = editCfg.stops     || [];
+  const names    = editCfg.stopNames || [];
+  const colors   = editCfg.colors    || [];
+  const icons    = editCfg.icons     || [];
+  document.getElementById('cfg-proxy').value = editCfg.proxy || '';
+
+  list.innerHTML = stops.map((id, i) => `
+    <div class="stop-row">
+      <input class="stop-input" type="text" value="${h(id)}" placeholder="740012345"
+        oninput="editCfg.stops[${i}]=this.value">
+      <input class="stop-input" type="text" value="${h(names[i]||'')}" placeholder="Hållplatsnamn"
+        oninput="if(!editCfg.stopNames)editCfg.stopNames=[];editCfg.stopNames[${i}]=this.value">
+      <select class="stop-color-sel" onchange="if(!editCfg.colors)editCfg.colors=[];editCfg.colors[${i}]=this.value">
+        ${['blue','red','green','orange','dark'].map(c=>`<option value="${c}" ${(colors[i]||'blue')===c?'selected':''}>${c.charAt(0).toUpperCase()+c.slice(1)}</option>`).join('')}
+      </select>
+      <select class="stop-icon-sel" onchange="if(!editCfg.icons)editCfg.icons=[];editCfg.icons[${i}]=this.value">
+        ${['','BUS','METRO','TRAM','TRAIN','FERRY'].map(ic=>`<option value="${ic}" ${(icons[i]||'')===ic?'selected':''}>${ic||'Auto'}</option>`).join('')}
+      </select>
+      <button class="btn-remove-stop" onclick="removeStop(${i})">
+        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+      </button>
+    </div>`).join('');
+}
+
+function addStop() {
+  if (!editCfg.stops) editCfg.stops = [];
+  if (!editCfg.stopNames) editCfg.stopNames = [];
+  if (!editCfg.colors) editCfg.colors = [];
+  if (!editCfg.icons)  editCfg.icons  = [];
+  editCfg.stops.push('');
+  editCfg.stopNames.push('');
+  editCfg.colors.push('blue');
+  editCfg.icons.push('');
+  renderStops();
+}
+
+function removeStop(i) {
+  editCfg.stops.splice(i,1);
+  editCfg.stopNames.splice(i,1);
+  editCfg.colors.splice(i,1);
+  editCfg.icons.splice(i,1);
+  renderStops();
+}
+
+// ── LOGO ───────────────────────────────────────────────────
+const logoZone = document.getElementById('logo-zone');
+logoZone.addEventListener('dragover', e => { e.preventDefault(); logoZone.classList.add('drag-over'); });
+logoZone.addEventListener('dragleave', () => logoZone.classList.remove('drag-over'));
+logoZone.addEventListener('drop', e => { e.preventDefault(); logoZone.classList.remove('drag-over'); if(e.dataTransfer.files[0]) handleLogoFile(e.dataTransfer.files[0]); });
+
+async function handleLogoFile(file) {
+  if (!file) return;
+  const maxMB = 2;
+  if (file.size > maxMB * 1024 * 1024) { toast(`Filen är för stor (max ${maxMB} MB)`, 'err'); return; }
+
+  const ext = file.name.split('.').pop().toLowerCase();
+  const allowed = ['svg','png','webp','jpg','jpeg'];
+  if (!allowed.includes(ext)) { toast('Ogiltigt filformat — accepterar SVG, PNG, WebP, JPEG', 'err'); return; }
+
+  const type = ext === 'jpeg' ? 'jpg' : ext;
+
+  // Read as base64
+  const b64 = await new Promise((res, rej) => {
+    const reader = new FileReader();
+    reader.onload = e => res(e.target.result.split(',')[1]);
+    reader.onerror = rej;
+    reader.readAsDataURL(file);
+  });
+
+  // For PNG/JPEG: normalise with Canvas (resize if too large, strip EXIF)
+  let finalB64 = b64;
+  let finalType = type;
+  if (type === 'png' || type === 'jpg' || type === 'webp') {
+    finalB64 = await normaliseRasterLogo(b64, type);
+    finalType = 'webp'; // always output WebP for rasters
+  }
+
+  logoPending = { data: finalB64, type: finalType };
+
+  // Show preview from local data
+  const previewUrl = `data:image/${finalType === 'jpg' ? 'jpeg' : finalType};base64,${finalB64}`;
+  showLogoPreview(previewUrl, document.getElementById('cfg-brandcolor').checked);
+  toast('Logotyp redo — spara för att ladda upp', 'ok');
+}
+
+async function normaliseRasterLogo(b64, type) {
+  return new Promise(resolve => {
+    const img = new Image();
+    img.onload = () => {
+      const MAX = 600;
+      let w = img.width, h = img.height;
+      if (w > MAX || h > MAX) {
+        const ratio = Math.min(MAX/w, MAX/h);
+        w = Math.round(w * ratio); h = Math.round(h * ratio);
+      }
+      const canvas = document.createElement('canvas');
+      canvas.width = w; canvas.height = h;
+      const ctx = canvas.getContext('2d');
+      ctx.drawImage(img, 0, 0, w, h);
+      resolve(canvas.toDataURL('image/webp', 0.92).split(',')[1]);
+    };
+    img.src = `data:image/${type === 'jpg' ? 'jpeg' : type};base64,${b64}`;
+  });
+}
+
+function showLogoPreview(src, isColor) {
+  const img = document.getElementById('logo-preview-img');
+  img.src = src;
+  img.className = 'logo-preview-img' + (isColor ? ' color' : '');
+  document.getElementById('logo-preview-name').textContent = editCfg.brandname || editSlug;
+  document.getElementById('logo-preview-wrap').classList.add('show');
+}
+
+function updateLogoPreview() {
+  const img = document.getElementById('logo-preview-img');
+  const isColor = document.getElementById('cfg-brandcolor').checked;
+  img.className = 'logo-preview-img' + (isColor ? ' color' : '');
+}
+
+function removeLogo() {
+  logoPending = null;
+  editCfg.logoFile = null;
+  editCfg.logoExt  = null;
+  document.getElementById('logo-preview-wrap').classList.remove('show');
+  document.getElementById('logo-input').value = '';
+}
+
+// ── INFO TICKER ────────────────────────────────────────────
+function renderInfoList() {
+  const list = document.getElementById('info-list');
+  if (!editInfo.length) {
+    list.innerHTML = `<div style="text-align:center;color:var(--text3);padding:20px;background:var(--card);border:1px solid var(--border);border-radius:8px;font-size:0.82rem">Inga meddelanden ännu</div>`;
     return;
   }
-  list.innerHTML = items.map((it, i) => `
-    <div class="item-card" id="card-${i}"
-      draggable="true"
-      ondragstart="dragStart(event,${i})"
-      ondragover="dragOver(event,${i})"
-      ondragleave="dragLeave(${i})"
-      ondrop="drop(event,${i})"
-      ondragend="dragEnd()">
-      <div>
-        <div class="item-col-label">Tagg</div>
-        <input class="item-tag" type="text" value="${h(it.tag)}"
-          oninput="items[${i}].tag=this.value;renderPreview()"
-          placeholder="Info">
-      </div>
-      <div>
-        <div class="item-col-label">Meddelande</div>
-        <textarea class="item-text"
-          oninput="items[${i}].text=this.value;renderPreview();autoH(this)"
-          placeholder="Skriv meddelande…">${h(it.text)}</textarea>
-      </div>
-      <div class="item-actions">
-        <button class="btn-icon" title="Flytta upp" onclick="move(${i},-1)">
-          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><polyline points="18 15 12 9 6 15"/></svg>
-        </button>
-        <button class="btn-icon" title="Flytta ner" onclick="move(${i},1)">
-          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><polyline points="6 9 12 15 18 9"/></svg>
-        </button>
-        <button class="btn-icon del" title="Ta bort" onclick="remove(${i})">
-          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14H6L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/></svg>
-        </button>
-      </div>
+  list.innerHTML = editInfo.map((it,i) => `
+    <div class="info-card" id="ic-${i}" draggable="true"
+      ondragstart="dragInfoStart(event,${i})"
+      ondragover="dragInfoOver(event,${i})"
+      ondragleave="dragInfoLeave(${i})"
+      ondrop="dragInfoDrop(event,${i})"
+      ondragend="dragInfoEnd()">
+      <input class="info-tag-input" type="text" value="${h(it.tag)}"
+        oninput="editInfo[${i}].tag=this.value;renderPreview()">
+      <textarea class="info-text-input"
+        oninput="editInfo[${i}].text=this.value;renderPreview();autoH(this)"
+        >${h(it.text)}</textarea>
+      <button class="btn-del-info" onclick="removeInfoItem(${i})">
+        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+      </button>
     </div>`).join('');
-
-  requestAnimationFrame(() => {
-    document.querySelectorAll('.item-text').forEach(autoH);
-  });
+  requestAnimationFrame(()=>document.querySelectorAll('.info-text-input').forEach(autoH));
 }
 
-function autoH(el) {
-  el.style.height = 'auto';
-  el.style.height = el.scrollHeight + 'px';
-}
+function autoH(el){el.style.height='auto';el.style.height=el.scrollHeight+'px';}
 
-// ── MUTATIONS ──────────────────────────────────────────────
-function addItem() {
-  items.push({ tag: 'Info', text: '' });
-  render();
-  renderPreview();
-  requestAnimationFrame(() => {
-    const txts = document.querySelectorAll('.item-text');
-    if (txts.length) txts[txts.length-1].focus();
-  });
+function addInfoItem() {
+  editInfo.push({tag:'Info',text:''});
+  renderInfoList();renderPreview();
+  requestAnimationFrame(()=>{const t=document.querySelectorAll('.info-text-input');if(t.length)t[t.length-1].focus();});
 }
-function remove(i) {
-  items.splice(i, 1);
-  render();
-  renderPreview();
-}
-function move(i, dir) {
-  const j = i + dir;
-  if (j < 0 || j >= items.length) return;
-  [items[i], items[j]] = [items[j], items[i]];
-  render();
-  renderPreview();
-}
+function removeInfoItem(i){editInfo.splice(i,1);renderInfoList();renderPreview();}
 
-// ── DRAG & DROP ────────────────────────────────────────────
-function dragStart(e, i) {
-  dragSrc = i;
-  document.getElementById('card-'+i).classList.add('dragging');
-  e.dataTransfer.effectAllowed = 'move';
-}
-function dragOver(e, i) {
-  e.preventDefault();
-  if (i !== dragSrc) document.getElementById('card-'+i).classList.add('drag-over');
-}
-function dragLeave(i) {
-  document.getElementById('card-'+i).classList.remove('drag-over');
-}
-function drop(e, i) {
-  e.preventDefault();
-  document.getElementById('card-'+i).classList.remove('drag-over');
-  if (dragSrc === null || dragSrc === i) return;
-  const moved = items.splice(dragSrc, 1)[0];
-  items.splice(i, 0, moved);
-  dragSrc = null;
-  render();
-  renderPreview();
-}
-function dragEnd() {
-  document.querySelectorAll('.item-card').forEach(c =>
-    c.classList.remove('dragging', 'drag-over'));
-  dragSrc = null;
-}
-
-// ── PREVIEW ────────────────────────────────────────────────
 function renderPreview() {
-  const el = document.getElementById('preview');
-  if (!items.length) { el.textContent = ''; return; }
-  const all = [...items, ...items];
-  el.innerHTML = all.map(it =>
-    `<span style="padding:0 36px"><b>${h(it.tag)}:</b> ${h(it.text)}</span>`
-  ).join('');
-  requestAnimationFrame(() => {
-    const half = el.scrollWidth / 2;
-    el.style.animation = 'none';
-    void el.offsetWidth;
-    el.style.animation = `prev-scroll ${Math.max(8, half / 50)}s linear infinite`;
+  const el = document.getElementById('preview-inner');
+  if(!editInfo.length){el.textContent='';return;}
+  const all=[...editInfo,...editInfo];
+  el.innerHTML=all.map(it=>`<span style="padding:0 32px"><b>${h(it.tag)}:</b> ${h(it.text)}</span>`).join('');
+  requestAnimationFrame(()=>{
+    const half=el.scrollWidth/2;
+    el.style.animation='none';void el.offsetWidth;
+    el.style.animation=`prev-scroll ${Math.max(6,half/50)}s linear infinite`;
   });
 }
 
-// ── SAVE ───────────────────────────────────────────────────
-async function save() {
-  const btn = document.getElementById('save-btn');
-  btn.classList.add('saving');
-  btn.disabled = true;
+// Drag info
+function dragInfoStart(e,i){dragInfoSrc=i;document.getElementById('ic-'+i).classList.add('dragging');e.dataTransfer.effectAllowed='move';}
+function dragInfoOver(e,i){e.preventDefault();if(i!==dragInfoSrc)document.getElementById('ic-'+i).classList.add('drag-over');}
+function dragInfoLeave(i){document.getElementById('ic-'+i).classList.remove('drag-over');}
+function dragInfoDrop(e,i){e.preventDefault();document.getElementById('ic-'+i).classList.remove('drag-over');if(dragInfoSrc===null||dragInfoSrc===i)return;const m=editInfo.splice(dragInfoSrc,1)[0];editInfo.splice(i,0,m);dragInfoSrc=null;renderInfoList();renderPreview();}
+function dragInfoEnd(){document.querySelectorAll('.info-card').forEach(c=>c.classList.remove('dragging','drag-over'));dragInfoSrc=null;}
 
-  const toSave = items.filter(it => it.text.trim());
+// ── SAVE ALL ───────────────────────────────────────────────
+async function saveAll() {
+  const btn = document.getElementById('save-btn');
+  btn.classList.add('saving'); btn.disabled = true;
 
   try {
-    const r = await fetch(INFO_PUT, {
-      method: 'PUT',
-      headers: {
-        'Content-Type': 'application/json',
-        'X-Admin-Password': SESSION_PW,
-      },
-      body: JSON.stringify(toSave, null, 2),
-    });
+    // Collect config from form
+    const cfg = {
+      ...editCfg,
+      brandname:  document.getElementById('cfg-brandname').value.trim(),
+      accent:     document.getElementById('cfg-accent').value,
+      qr:         document.getElementById('cfg-qr').value.trim(),
+      qrlabel:    document.getElementById('cfg-qrlabel').value,
+      lat:        parseFloat(document.getElementById('cfg-lat').value)||59.3293,
+      lon:        parseFloat(document.getElementById('cfg-lon').value)||18.0686,
+      brandcolor: document.getElementById('cfg-brandcolor').checked,
+      proxy:      document.getElementById('cfg-proxy').value.trim()||'https://sltavla.soxbox.uk/api/proxy',
+    };
 
-    if (r.status === 401) {
-      // Fel lösenord
-      sessionStorage.removeItem('kiosk_pw');
-      SESSION_PW = '';
-      toast('Fel lösenord — logga in igen', 'err');
-      setTimeout(() => location.reload(), 2000);
-      return;
+    // Upload logo if pending
+    if (logoPending) {
+      const lr = await apiFetch('POST', `/kiosk/${editSlug}/logo`, logoPending);
+      if (lr.ok) {
+        cfg.logoFile = lr.file;
+        cfg.logoExt  = lr.ext;
+        logoPending = null;
+      } else {
+        throw new Error('Logo-uppladdning misslyckades: ' + (lr.error||''));
+      }
     }
-    if (!r.ok) throw new Error('HTTP ' + r.status);
 
-    toast('Sparat! Kiosken uppdateras inom 5 min ✓', 'ok');
-    items = toSave; // sync local state
+    // Save config
+    await apiFetch('PUT', `/kiosk/${editSlug}/config`, cfg);
 
+    // Save info
+    const infoToSave = editInfo.filter(it=>it.text.trim());
+    await apiFetch('PUT', `/kiosk/${editSlug}/info`, infoToSave);
+
+    editCfg = cfg;
+    toast('Sparat! ✓', 'ok');
+    document.getElementById('edit-topbar-title').textContent = cfg.brandname || editSlug;
   } catch(e) {
-    // Fallback: ladda ner som fil
-    const blob = new Blob([JSON.stringify(toSave, null, 2)], { type: 'application/json' });
-    const a = document.createElement('a');
-    a.href = URL.createObjectURL(blob);
-    a.download = 'info.json';
-    a.click();
-    toast('Kunde inte spara till server — fil nedladdad istället', 'err');
+    if (e.message.includes('401')) {
+      sessionStorage.removeItem('kiosk_admin_pw');
+      toast('Sessionen gick ut — logga in igen', 'err');
+      setTimeout(()=>location.reload(), 2000);
+    } else {
+      toast('Fel: ' + e.message, 'err');
+    }
   } finally {
-    btn.classList.remove('saving');
-    btn.disabled = false;
+    btn.classList.remove('saving'); btn.disabled = false;
   }
+}
+
+async function apiFetch(method, path, body) {
+  const r = await fetch(API + path, {
+    method,
+    headers: { 'Content-Type':'application/json', 'X-Admin-Password': PW },
+    body: body ? JSON.stringify(body) : undefined,
+  });
+  if (r.status === 401) throw new Error('401 Ej autentiserad');
+  const data = await r.json();
+  if (!r.ok) throw new Error(data.error || 'HTTP ' + r.status);
+  return data;
+}
+
+// ── NEW KIOSK ──────────────────────────────────────────────
+function openNewModal() { document.getElementById('new-modal').classList.add('open'); }
+function closeNewModal(e) { if(!e||e.target===document.getElementById('new-modal')) document.getElementById('new-modal').classList.remove('open'); }
+
+document.getElementById('new-name').addEventListener('input', function() {
+  const slug = this.value.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/[åä]/g,'a').replace(/ö/g,'o').replace(/\s+/g,'_').replace(/[^a-z0-9_-]/g,'');
+  document.getElementById('new-slug').value = slug;
+  document.getElementById('slug-preview').textContent = slug || '…';
+});
+document.getElementById('new-slug').addEventListener('input', function() {
+  document.getElementById('slug-preview').textContent = this.value || '…';
+});
+
+async function createKiosk() {
+  const name = document.getElementById('new-name').value.trim();
+  const slug = document.getElementById('new-slug').value.trim();
+  if (!name || !slug) { toast('Ange både namn och slug', 'err'); return; }
+  try {
+    await apiFetch('POST', '/kiosk', { slug, brandname: name });
+    document.getElementById('new-modal').classList.remove('open');
+    toast('Kiosk skapad!', 'ok');
+    await openEdit(slug);
+  } catch(e) {
+    toast(e.message, 'err');
+  }
+}
+
+// ── DELETE KIOSK ───────────────────────────────────────────
+async function deleteKiosk() {
+  if (!confirm(`Ta bort kiosken "${editCfg.brandname||editSlug}" permanent? Åtgärden kan inte ångras.`)) return;
+  try {
+    await apiFetch('DELETE', `/kiosk/${editSlug}`);
+    toast('Kiosk borttagen', 'ok');
+    showList();
+  } catch(e) { toast(e.message, 'err'); }
 }
 
 // ── TOAST ──────────────────────────────────────────────────
-function toast(msg, type = 'ok') {
+function toast(msg, type='ok') {
   const el = document.getElementById('toast');
   el.textContent = msg;
   el.className = `toast ${type} show`;
   clearTimeout(el._t);
-  el._t = setTimeout(() => el.classList.remove('show'), 4000);
+  el._t = setTimeout(()=>el.classList.remove('show'), 4000);
 }
 
 // ── HELPERS ────────────────────────────────────────────────
-function h(s) {
-  return (s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
-}
+function h(s){return(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
 </script>
 </body>
 </html>

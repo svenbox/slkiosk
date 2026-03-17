@@ -1,20 +1,20 @@
-# slkiosk — Branded Infoskärm
+# slkiosk v2
 
-Modulär infoskärm för storskärm och Raspberry Pi. Brandas med egen logotyp, färg och QR-kod. Hämtar kollektivtrafikdata via samma proxy som [sltavla.soxbox.uk](https://sltavla.soxbox.uk).
+Modulär infoskärm för storskärm och Raspberry Pi. Stöder flera kiosker per server, var och en med egen branding, hållplatser och infobands-innehåll.
 
 ## Innehåll
 
 ```
 slkiosk/
-├── kiosk.html          — infoskärmen (en fil, inga beroenden)
-├── admin.html          — webbgränssnitt för att redigera infobandet
-├── proxy.js            — CORS-proxy + GET/PUT för info.json
-├── nginx.conf          — servar frontend, proxar /api/
-├── Dockerfile          — nginx med kiosk.html + admin.html
-├── Dockerfile.proxy    — Node.js med proxy.js
-├── docker-compose.yml  — två containers + delad volym
-├── deploy.sh           — bygg och starta om
-└── .env.example        — miljövariabler
+├── kiosk.html       — infoskärmen (läser config från /api/kiosk/:slug)
+├── admin.html       — central adminpanel för alla kiosker
+├── proxy.js         — API + CORS-proxy (Node.js)
+├── nginx.conf       — slug-routing + API-proxy
+├── Dockerfile       — nginx frontend
+├── Dockerfile.proxy — Node.js backend
+├── docker-compose.yml
+├── deploy.sh
+└── .env.example
 ```
 
 ## Snabbstart
@@ -23,42 +23,111 @@ slkiosk/
 git clone https://github.com/DITT-ANVÄNDARNAMN/slkiosk.git
 cd slkiosk
 cp .env.example .env
-# Redigera .env — sätt TL_API_KEY och ADMIN_PW
+# Redigera .env
 docker compose up -d
-```
-
-Kiosken körs på port **8088** i `mediastack`-nätverket.
-
-## Uppdatera
-
-```bash
-./deploy.sh
 ```
 
 ## Miljövariabler (.env)
 
-| Variabel      | Beskrivning                                          | Standard    |
-|---------------|------------------------------------------------------|-------------|
-| `TL_API_KEY`  | API-nyckel från [trafiklab.se](https://trafiklab.se) | —           |
-| `ADMIN_PW`    | Lösenord för admin-gränssnittet                      | `kiosk2024` |
+| Variabel     | Beskrivning                          | Standard    |
+|--------------|--------------------------------------|-------------|
+| `TL_API_KEY` | API-nyckel från trafiklab.se         | —           |
+| `ADMIN_PW`   | Lösenord för admin-panelen           | `kiosk2024` |
 
-```bash
-# .env
-TL_API_KEY=din_trafiklab_nyckel_här
-ADMIN_PW=byt_till_eget_lösenord
+## URLs
+
+| URL | Beskrivning |
+|-----|-------------|
+| `/admin` | Central adminpanel |
+| `/:slug` | Kiosk-display, t.ex. `/skarpnacks_frisor` |
+
+## Admin
+
+Öppna `https://slkiosk.soxbox.uk/admin` och logga in med `ADMIN_PW`.
+
+### Skapa en kiosk
+
+1. Klicka **Ny kiosk**
+2. Ange organisationsnamn → slug genereras automatiskt
+3. Redigera branding, hållplatser och infobandet
+4. Spara
+
+### Logo-uppladdning
+
+Admin-sidan accepterar SVG, PNG, WebP och JPEG upp till 2 MB.
+
+- **SVG**: rensas automatiskt — `width`/`height` tas bort, hårda svarta `fill`-färger ersätts med `currentColor` för att fungera med CSS-inversion
+- **PNG/JPEG/WebP**: normaliseras via Canvas, konverteras till WebP, skalas ner till max 600px om nödvändigt
+
+Toggla "Originalfärger" för att visa logotypen utan vit inversion (för färgade logotyper på mörk bakgrund).
+
+## Data-struktur
+
+Varje kiosk lagras som en mapp i Docker-volymen `slkiosk-data`:
+
+```
+/data/kiosks/
+  skarpnacks_frisor/
+    config.json    — branding, hållplatser, koordinater
+    info.json      — ticker-meddelanden
+    logo.svg       — logotyp (valfritt)
 ```
 
-## SWAG — reverse proxy
+### config.json
 
-Skapa `/config/nginx/proxy-confs/slkiosk.soxbox.uk.conf`:
+```json
+{
+  "slug":       "skarpnacks_frisor",
+  "brandname":  "Skarpnäcks Frisör",
+  "accent":     "#1a2535",
+  "accenttext": "#ffffff",
+  "brandcolor": false,
+  "qr":         "https://foretaget.se",
+  "qrlabel":    "Boka tid",
+  "stops":      ["740045499", "740065553"],
+  "stopNames":  ["Skarpnäck T-bana", "Horisontvägen"],
+  "colors":     ["blue", "red"],
+  "icons":      ["METRO", "BUS"],
+  "lat":        59.33,
+  "lon":        18.06,
+  "proxy":      "https://sltavla.soxbox.uk/api/proxy",
+  "logoFile":   "logo.svg",
+  "logoExt":    "svg"
+}
+```
 
+### info.json
+
+```json
+[
+  { "tag": "Info", "text": "Lunch serveras 11:30–13:30" },
+  { "tag": "Möte", "text": "Styrelsemöte fredag kl 14:00" }
+]
+```
+
+Redigera direkt med nano om du föredrar det:
+```bash
+docker exec -it slkiosk-proxy sh
+nano /data/kiosks/skarpnacks_frisor/info.json
+```
+
+## Raspberry Pi
+
+Sätt FullpageOS `fullpageosDisplayUrl` till:
+```
+https://slkiosk.soxbox.uk/skarpnacks_frisor
+```
+
+## SWAG
+
+`/config/nginx/proxy-confs/slkiosk.soxbox.uk.conf`:
 ```nginx
 server {
     listen 443 ssl;
     listen [::]:443 ssl;
     server_name slkiosk.*;
     include /config/nginx/ssl.conf;
-    client_max_body_size 0;
+    client_max_body_size 5m;
     location / {
         include /config/nginx/proxy.conf;
         include /config/nginx/resolver.conf;
@@ -70,174 +139,28 @@ server {
 }
 ```
 
-```bash
-docker exec swag nginx -s reload
-```
+## API
 
----
+| Method | Path | Auth | Beskrivning |
+|--------|------|------|-------------|
+| GET | `/api/kiosks` | — | Lista alla kiosker |
+| POST | `/api/kiosk` | ✓ | Skapa ny kiosk |
+| GET | `/api/kiosk/:slug/config` | — | Hämta config |
+| PUT | `/api/kiosk/:slug/config` | ✓ | Spara config |
+| GET | `/api/kiosk/:slug/info` | — | Hämta ticker |
+| PUT | `/api/kiosk/:slug/info` | ✓ | Spara ticker |
+| POST | `/api/kiosk/:slug/logo` | ✓ | Ladda upp logo (base64 JSON) |
+| GET | `/api/kiosk/:slug/logo` | — | Hämta logo-fil |
+| DELETE | `/api/kiosk/:slug` | ✓ | Ta bort kiosk |
 
-## Kiosken — kiosk.html
-
-Hela infoskärmen i en enda HTML-fil. Konfigureras via URL-parametrar.
-
-### URL-parametrar
-
-| Parameter    | Beskrivning                                                          | Standard                              |
-|--------------|----------------------------------------------------------------------|---------------------------------------|
-| `stops`      | SL Stop-ID, kommaseparerade                                          | `9001`                                |
-| `names`      | Visningsnamn per tavla, kommaseparerade                              | Stop-ID                               |
-| `colors`     | Headerfärg per tavla: `blue` `red` `green` `orange` `dark`          | `blue`                                |
-| `accent`     | Bakgrundsfärg runt modulerna (URI-encodad hex, t.ex. `%231a2535`)   | `#1a2535`                             |
-| `accenttext` | Textfärg på bakgrunden                                               | `#ffffff`                             |
-| `brand`      | URL till logotyp (PNG/SVG) — inverteras till vit automatiskt        | —                                     |
-| `brandname`  | Företagsnamn i topbaren                                              | —                                     |
-| `brandcolor` | `true` = visa logotypen i originalfärg (ej inverterad)              | `false`                               |
-| `qr`         | URL som QR-koden pekar på                                            | `https://sltavla.soxbox.uk`           |
-| `qrlabel`    | Text under QR-koden (`\n` = radbrytning)                            | `Öppna i\nmobilen`                    |
-| `lat`        | Latitud för väder                                                    | `59.3293` (Stockholm)                 |
-| `lon`        | Longitud för väder                                                   | `18.0686`                             |
-| `proxy`      | URL till proxy-servern                                               | `https://sltavla.soxbox.uk/api/proxy` |
-| `info`       | URL till info.json                                                   | `/info.json`                          |
-| `rows`       | Max rader per tavla (0 = auto, rekommenderat max 5)                  | `0`                                   |
-
-### Exempel-URL
-
-```
-https://slkiosk.soxbox.uk/?stops=740021691,740065553
-  &names=Skarpnäck+T-bana,Horisontvägen
-  &colors=blue,red
-  &accent=%231a2535
-  &brand=https://foretaget.se/logo.png
-  &brandname=Företaget+AB
-  &brandcolor=true
-  &qr=https://foretaget.se
-  &qrlabel=Besök+oss
-  &lat=59.27
-  &lon=18.13
-  &proxy=https://sltavla.soxbox.uk/api/proxy
-```
-
-### Hitta Stop-ID
-
-1. Gå till [sltavla.soxbox.uk](https://sltavla.soxbox.uk)
-2. Skapa en tavla för hållplatsen
-3. Öppna ⚙ Debug längst ner — Stop-ID syns i loggen
-
-### Branding — exempel
-
-| Stil | Parametrar |
-|------|-----------|
-| Mörk (standard) | `accent=%231a2535` |
-| Företagsblå | `accent=%23003366&brand=https://…/logo.png&brandcolor=true` |
-| Svart/vit logotyp | `accent=%23111111&brand=https://…/logo-white.svg` |
-| Frisör | `accent=%23111111&brandname=Tre+Sax+%26+Kam&qrlabel=Boka+tid` |
-
----
-
-## Admin — admin.html
-
-Webbgränssnitt för att redigera infobandets meddelanden utan SSH.
-
-### Öppna admin
-
-```
-https://slkiosk.soxbox.uk/admin.html?proxy=https://sltavla.soxbox.uk/api/proxy&kiosk=https://slkiosk.soxbox.uk
-```
-
-Logga in med lösenordet du satte i `.env` som `ADMIN_PW`.
-
-### Funktioner
-
-- Lägg till, redigera och ta bort meddelanden
-- Drag & drop för att ändra ordning
-- Förhandsvisning av tickern i realtid
-- Sparar direkt till servern — kiosken uppdateras automatiskt inom 5 minuter
-- Fallback: laddar ner `info.json` lokalt om servern inte svarar
-
-### Flöde
-
-```
-admin.html  →  PUT /api/info (X-Admin-Password header)
-            →  nginx proxy  →  slkiosk-proxy:3000/info
-            →  proxy.js validerar lösenord + sparar till /data/info.json (Docker-volym)
-            →  kiosk.html hämtar /info.json var 5:e minut
-```
-
----
-
-## info.json — infobandet
-
-Redigera via admin-gränssnittet eller direkt på servern.
-
-```json
-[
-  { "tag": "Info",  "text": "Lunch serveras i matsalen 11:30–13:30" },
-  { "tag": "Möte",  "text": "Styrelsemöte fredag kl 14:00 i konferensrum B" },
-  { "tag": "SL",    "text": "Förseningar linje 35 — beräknad normalisering 10:30" },
-  { "tag": "Nyhet", "text": "Ny busslinje 174 från 15 mars — se sl.se" }
-]
-```
-
----
-
-## Raspberry Pi — FullpageOS
-
-Sätt `fullpageosDisplayUrl` till kiosk-URL:en:
-
-```
-https://slkiosk.soxbox.uk/?stops=STOP_ID&names=Hållplatsnamn&proxy=https://sltavla.soxbox.uk/api/proxy
-```
-
-Eller starta Chromium manuellt:
-
-```bash
-chromium-browser \
-  --kiosk \
-  --noerrdialogs \
-  --disable-infobars \
-  --no-first-run \
-  --disable-pinch \
-  --overscroll-history-navigation=0 \
-  "https://slkiosk.soxbox.uk/?stops=740021691&names=Skarpnäck+T-bana"
-```
-
----
-
-## Arkitektur
-
-```
-Webbläsare / Raspberry Pi
-  └── https://slkiosk.soxbox.uk  (SWAG → slkiosk:8088)
-        ├── /           → kiosk.html        (infoskärmen)
-        ├── /admin.html → admin.html        (tickeradmin)
-        ├── /api/proxy  → slkiosk-proxy:3000/       (avgångar)
-        └── /api/info   → slkiosk-proxy:3000/info   (GET/PUT info.json)
-
-slkiosk-proxy (Node.js)
-  ├── GET  /              → CORS-proxy mot Trafiklab + SL API
-  ├── GET  /info          → läser /data/info.json (Docker-volym)
-  └── PUT  /info          → sparar /data/info.json (kräver X-Admin-Password)
-
-Väder
-  └── https://api.open-meteo.com  (gratis, ingen nyckel krävs)
-```
+Auth = `X-Admin-Password`-header med `ADMIN_PW`.
 
 ## Relation till sltavla.soxbox.uk
 
 | | sltavla | slkiosk |
 |---|---|---|
-| **Syfte** | Mobilapp, personliga tavlor | Infoskärm, storskärm, Raspberry Pi |
-| **Branding** | Nej | Logotyp, bakgrundsfärg, QR-kod |
-| **Infobandet** | Nej | info.json, redigerbar via admin |
-| **Väder** | Nej | Open-Meteo (gratis) |
-| **Admin** | Nej | admin.html med lösenord |
-| **Konfiguration** | UI + localStorage | URL-parametrar |
-
-## Prestanda (Raspberry Pi 4)
-
-- En statisk HTML-fil — inga frameworks
-- Avgångar uppdateras var 30s, staggerade 900ms/tavla
-- Väder var 10 min
-- Infobandet var 5 min
-- Klocka tickar var 10s
-- CPU: ~5–10% på Pi 4 i kiosk-läge
+| Syfte | Mobilapp, personliga tavlor | Infoskärm, storskärm, Pi |
+| Konfiguration | UI + localStorage | Admin-panel + config.json |
+| Flera instanser | Per användare | Per slug/organisation |
+| Branding | Nej | Ja — logotyp, färg, QR |
+| Infobandet | Nej | Ja — redigerbart via admin |
