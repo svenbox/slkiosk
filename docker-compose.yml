@@ -1,21 +1,21 @@
 services:
-  sl-kiosk:
+  slkiosk:
     build:
       context: .
       dockerfile: Dockerfile
-    container_name: sl-kiosk
+    container_name: slkiosk
     restart: unless-stopped
     ports:
       - "8088:80"
     networks:
-      - sl-kiosk-net
+      - slkiosk-net
       - mediastack
 
   sl-kiosk-proxy:
     build:
       context: .
       dockerfile: Dockerfile.proxy
-    container_name: sl-kiosk-proxy
+    container_name: slkiosk-proxy
     restart: unless-stopped
     environment:
       - TL_API_KEY=${TL_API_KEY}
@@ -24,15 +24,15 @@ services:
     volumes:
       - kiosk-data:/data
     networks:
-      - sl-kiosk-net
+      - slkiosk-net
 
 volumes:
   kiosk-data:
-    name: sl-kiosk-data
+    name: slkiosk-data
 
 networks:
-  sl-kiosk-net:
-    name: sl-kiosk-net
+  slkiosk-net:
+    name: slkiosk-net
     driver: bridge
   mediastack:
     external: true
