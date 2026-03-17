@@ -335,7 +335,6 @@ html, body {
       <span class="tb-w-icon" id="tb-w-icon">⛅</span>
       <span class="tb-w-temp" id="tb-w-temp">–</span>
       <span class="tb-w-desc" id="tb-w-desc"></span>
-      <span class="tb-w-wind" id="tb-w-wind"></span>
     </div>
     <div class="tb-clock-wrap">
       <div id="tb-clock">--:--</div>
@@ -371,7 +370,6 @@ html, body {
           <div class="wm-det"><div class="wm-det-l">Vind</div><div class="wm-det-v" id="wm-wind">–</div></div>
           <div class="wm-det"><div class="wm-det-l">Luftfukt.</div><div class="wm-det-v" id="wm-hum">–</div></div>
           <div class="wm-det"><div class="wm-det-l">Känns som</div><div class="wm-det-v" id="wm-feel">–</div></div>
-          <div class="wm-det"><div class="wm-det-l">Sikt</div><div class="wm-det-v" id="wm-vis">–</div></div>
         </div>
         <div class="wm-sep2"></div>
         <div class="wm-fc" id="wm-forecast"></div>
@@ -562,14 +560,18 @@ async function refresh(i) {
       const ie=document.getElementById('dhi-'+i); if(ie) ie.innerHTML=modeIcon(dom,48);
     }
 
-    // Subtitle
+    // Subtitle — använd tvingad ikon-typ om satt, annars dominant från data
     const MSV={BUS:'Buss',METRO:'Tunnelbana',SUBWAY:'Tunnelbana',TRAM:'Spårvagn',TRAIN:'Tåg',FERRY:'Båt'};
-    const sub=[...new Set(deps.map(d=>d.mode))].map(m=>MSV[m]||m).join(' · ');
-    const se=document.getElementById('dhs-'+i); if(se) se.textContent=sub||id;
+    const forcedIcon = CFG.icons[i] || null;
+    const displayMode = forcedIcon || [...new Set(deps.map(d=>d.mode))].sort((a,b)=>{
+      const mc2={}; deps.forEach(d=>{mc2[d.mode]=(mc2[d.mode]||0)+1;}); return (mc2[b]||0)-(mc2[a]||0);
+    })[0] || 'BUS';
+    const sub = MSV[displayMode] || displayMode;
+    const se=document.getElementById('dhs-'+i); if(se) se.textContent=sub;
     const ue=document.getElementById('dhu-'+i); if(ue) ue.textContent='Uppdaterad '+new Date().toTimeString().slice(0,5);
 
     const lh=dl.offsetHeight||400, rh=Math.max(56,Math.min(88,lh/6));
-    const max=CFG.rows||Math.min(4,Math.max(3,Math.floor(lh/rh)));
+    const max=CFG.rows||Math.min(5,Math.max(3,Math.floor(lh/rh)));
     const now=new Date();
     const rows=deps
       .map(d=>{const rt=d.realtime?new Date(d.realtime):null,sch=d.scheduled?new Date(d.scheduled):null;return{...d,rt,sch,t:rt||sch,diff:(rt||sch)?Math.round(((rt||sch)-now)/60000):999};})
