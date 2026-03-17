@@ -142,7 +142,14 @@ body{font-family:var(--font);background:var(--bg);color:var(--text);min-height:1
 .stop-row { display:grid;grid-template-columns:1fr 90px 80px 36px;gap:8px;align-items:start; }
 .stop-row-headers { display:grid;grid-template-columns:1fr 90px 80px 36px;gap:8px;margin-bottom:4px; }
 
-/* ── KIOSK URL BOX ── */
+/* ── LOCATION ROW ── */
+.location-row { display:flex;gap:8px;align-items:flex-start; }
+.location-search-wrap { flex:1;position:relative; }
+.btn-geolocate { width:40px;height:36px;border:1.5px solid var(--border);border-radius:8px;background:var(--card);color:var(--text3);cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:all .15s; }
+.btn-geolocate:hover { border-color:var(--blue);color:var(--blue);background:var(--blue-bg); }
+.btn-geolocate.loading { animation:spin .8s linear infinite; }
+.location-selected { margin-top:7px;display:flex;align-items:center;gap:8px;font-size:0.82rem;color:var(--text2);background:var(--blue-bg);border:1px solid #aac4dc;border-radius:7px;padding:7px 12px; }
+.location-coords { font-size:0.7rem;color:var(--text3);margin-left:auto; }
 .kiosk-url-box { background:var(--blue-bg);border:1px solid #aac4dc;border-radius:10px;padding:14px 18px;margin-bottom:24px; }
 .kiosk-url-label { font-size:0.65rem;font-weight:700;text-transform:uppercase;letter-spacing:0.08em;color:var(--blue);margin-bottom:6px; }
 .kiosk-url-value { font-size:1rem;font-weight:700;color:var(--blue);word-break:break-all;margin-bottom:6px; }
@@ -340,17 +347,28 @@ body{font-family:var(--font);background:var(--bg);color:var(--text);min-height:1
         </div>
 
         <!-- WEATHER LOCATION -->
-        <div class="form-row-2">
-          <div class="form-section">
-            <label class="form-label">Latitud (väder)</label>
-            <input class="form-input" type="number" step="0.0001" id="cfg-lat" placeholder="59.3293">
+        <div class="form-section">
+          <label class="form-label">Väderplats</label>
+          <div class="location-row">
+            <div class="location-search-wrap">
+              <svg class="stop-search-icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
+              <input class="stop-search-input" type="text" id="cfg-location-search"
+                placeholder="Sök ort, t.ex. Stockholm…"
+                autocomplete="off"
+                oninput="onLocationSearch(this.value)">
+              <div class="stop-search-dd" id="location-dd"></div>
+            </div>
+            <button type="button" class="btn-geolocate" id="btn-geolocate" onclick="geolocate()" title="Hämta min plats">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="3"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3"/><circle cx="12" cy="12" r="8" stroke-dasharray="2 2"/></svg>
+            </button>
           </div>
-          <div class="form-section">
-            <label class="form-label">Longitud (väder)</label>
-            <input class="form-input" type="number" step="0.0001" id="cfg-lon" placeholder="18.0686">
+          <div class="location-selected" id="location-selected" style="display:none">
+            <span id="location-selected-name"></span>
+            <span class="location-coords" id="location-coords"></span>
           </div>
+          <input type="hidden" id="cfg-lat">
+          <input type="hidden" id="cfg-lon">
         </div>
-        <div class="form-hint" style="margin-top:-12px;margin-bottom:16px">Hitta koordinater på <a href="https://www.latlong.net" target="_blank">latlong.net</a></div>
       </div>
 
       <!-- TAB: STOPS -->
@@ -528,8 +546,15 @@ async function openEdit(slug) {
   document.getElementById('cfg-accent').value    = editCfg.accent     || '#1a2535';
   document.getElementById('cfg-qr').value        = editCfg.qr         || '';
   document.getElementById('cfg-qrlabel').value   = (editCfg.qrlabel||'').replace(/\\n/g,'\n');
-  document.getElementById('cfg-lat').value       = editCfg.lat        || 59.3293;
-  document.getElementById('cfg-lon').value       = editCfg.lon        || 18.0686;
+  document.getElementById('cfg-lat').value = editCfg.lat || 59.3293;
+  document.getElementById('cfg-lon').value = editCfg.lon || 18.0686;
+  // Show saved location
+  if (editCfg.locationName) {
+    setLocationDisplay(editCfg.locationName, editCfg.lat, editCfg.lon);
+    document.getElementById('cfg-location-search').value = editCfg.locationName;
+  } else if (editCfg.lat && editCfg.lon) {
+    setLocationDisplay(null, editCfg.lat, editCfg.lon);
+  }
   document.getElementById('cfg-brandcolor').checked = !!editCfg.brandcolor;
 
   // Logo preview
@@ -641,39 +666,33 @@ function onStopSearchFocus(i) {
 async function doStopSearch(i, q) {
   const dd = document.getElementById(`stop-dd-${i}`);
   const PROXY = 'https://sltavla.soxbox.uk/api/proxy';
-  const tlUrl = PROXY + '?url=' + encodeURIComponent(
-    `https://realtime-api.trafiklab.se/v1/stops/name/${encodeURIComponent(q)}?transport_authority_id=275`
-  );
+  // SL Transport API — already whitelisted in proxy
   const slUrl = PROXY + '?url=' + encodeURIComponent(
     `https://transport.integration.sl.se/v1/sites?expand=false&q=${encodeURIComponent(q)}`
   );
 
   try {
-    // Try Trafiklab first
-    const r = await fetch(tlUrl);
-    if (r.ok) {
-      const d = await r.json();
-      const groups = (d.stop_groups || []).filter(g => {
-        const s = String(g.id);
-        return s.length === 9 && s.startsWith('7400');
-      });
-      if (groups.length) { renderStopDd(i, groups.slice(0,8).map(g => ({ id: String(g.id), name: g.name })), dd); return; }
-    }
-  } catch(e) {}
-
-  // Fallback: SL API
-  try {
     const r = await fetch(slUrl);
-    if (r.ok) {
-      const data = await r.json();
-      const hits = (Array.isArray(data) ? data : data.sites || []).slice(0,8);
-      renderStopDd(i, hits.map(s => ({ id: String(s.id), name: s.name })), dd);
-      return;
-    }
-  } catch(e) {}
-
-  dd.innerHTML = `<div class="stop-dd-item" style="cursor:default;color:var(--text3)">Inga hållplatser hittades</div>`;
-  dd.classList.add('open');
+    if (!r.ok) throw new Error('HTTP ' + r.status);
+    const data = await r.json();
+    // API returns array directly or {sites:[...]}
+    const raw = Array.isArray(data) ? data : (data.sites || data.results || []);
+    // Filter to SL stops (id starts with 7400) and deduplicate by name
+    const seen = new Set();
+    const hits = raw.filter(s => {
+      const id = String(s.id || '');
+      if (!id.startsWith('7400')) return false;
+      const key = s.name?.toLowerCase();
+      if (seen.has(key)) return false;
+      seen.add(key);
+      return true;
+    }).slice(0, 8);
+    renderStopDd(i, hits.map(s => ({ id: String(s.id), name: s.name })), dd);
+  } catch(e) {
+    console.warn('Stop search error:', e.message);
+    dd.innerHTML = `<div class="stop-dd-item" style="cursor:default;color:var(--text3)">Sökning misslyckades — kontrollera anslutning</div>`;
+    dd.classList.add('open');
+  }
 }
 
 function renderStopDd(i, stops, dd) {
@@ -723,6 +742,31 @@ function clearStop(i) {
   const sel  = document.getElementById(`stop-sel-${i}`);
   if (wrap) { wrap.style.display = 'block'; wrap.querySelector('input').value = ''; }
   if (sel)  sel.classList.remove('show');
+}
+
+function addStop() {
+  if (!editCfg.stops)     editCfg.stops     = [];
+  if (!editCfg.stopNames) editCfg.stopNames = [];
+  if (!editCfg.colors)    editCfg.colors    = [];
+  if (!editCfg.icons)     editCfg.icons     = [];
+  editCfg.stops.push('');
+  editCfg.stopNames.push('');
+  editCfg.colors.push('blue');
+  editCfg.icons.push('');
+  renderStops();
+  // Focus the new search input
+  requestAnimationFrame(() => {
+    const inputs = document.querySelectorAll('.stop-search-input');
+    if (inputs.length) inputs[inputs.length - 1].focus();
+  });
+}
+
+function removeStop(i) {
+  editCfg.stops.splice(i, 1);
+  editCfg.stopNames.splice(i, 1);
+  if (editCfg.colors) editCfg.colors.splice(i, 1);
+  if (editCfg.icons)  editCfg.icons.splice(i, 1);
+  renderStops();
 }
 
 // Close dropdowns on outside click
@@ -884,6 +928,7 @@ async function saveAll() {
       qrlabel:    document.getElementById('cfg-qrlabel').value,
       lat:        parseFloat(document.getElementById('cfg-lat').value)||59.3293,
       lon:        parseFloat(document.getElementById('cfg-lon').value)||18.0686,
+      locationName: document.getElementById('cfg-location-search').value.trim() || editCfg.locationName || '',
       brandcolor: document.getElementById('cfg-brandcolor').checked,
       proxy:      'https://sltavla.soxbox.uk/api/proxy',
     };
@@ -976,6 +1021,105 @@ function copyKioskUrl() {
   const url = document.getElementById('edit-kiosk-url').textContent;
   navigator.clipboard.writeText(url).then(() => toast('URL kopierad!', 'ok'));
 }
+
+// ── WEATHER LOCATION ───────────────────────────────────────
+let locationSearchTimer = null;
+
+function setLocationDisplay(name, lat, lon) {
+  document.getElementById('cfg-lat').value = lat;
+  document.getElementById('cfg-lon').value = lon;
+  const sel = document.getElementById('location-selected');
+  const selName = document.getElementById('location-selected-name');
+  const coords = document.getElementById('location-coords');
+  sel.style.display = 'flex';
+  selName.textContent = name || 'Anpassad plats';
+  coords.textContent = `${Number(lat).toFixed(4)}, ${Number(lon).toFixed(4)}`;
+}
+
+function onLocationSearch(q) {
+  clearTimeout(locationSearchTimer);
+  const dd = document.getElementById('location-dd');
+  if (q.length < 2) { dd.classList.remove('open'); return; }
+  dd.innerHTML = `<div class="stop-dd-item" style="cursor:default;color:var(--text3)">Söker…</div>`;
+  dd.classList.add('open');
+  locationSearchTimer = setTimeout(() => doLocationSearch(q), 350);
+}
+
+async function doLocationSearch(q) {
+  const dd = document.getElementById('location-dd');
+  try {
+    const r = await fetch(
+      `https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(q)}&format=json&limit=6&countrycodes=se&accept-language=sv`,
+      { headers: { 'User-Agent': 'slkiosk-admin/2.0' } }
+    );
+    const results = await r.json();
+    if (!results.length) {
+      dd.innerHTML = `<div class="stop-dd-item" style="cursor:default;color:var(--text3)">Inga orter hittades</div>`;
+      return;
+    }
+    dd.innerHTML = results.map(loc => {
+      const name = loc.display_name.split(',').slice(0,2).join(', ');
+      return `<div class="stop-dd-item" onclick="pickLocation('${name.replace(/'/g,"\\'")}',${loc.lat},${loc.lon})">
+        <span style="color:var(--blue);display:flex;flex-shrink:0">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
+        </span>
+        <span class="stop-dd-name">${h(name)}</span>
+      </div>`;
+    }).join('');
+    dd.classList.add('open');
+  } catch(e) {
+    dd.innerHTML = `<div class="stop-dd-item" style="cursor:default;color:var(--text3)">Sökning misslyckades</div>`;
+  }
+}
+
+function pickLocation(name, lat, lon) {
+  document.getElementById('cfg-location-search').value = name;
+  document.getElementById('location-dd').classList.remove('open');
+  setLocationDisplay(name, lat, lon);
+}
+
+function geolocate() {
+  if (!navigator.geolocation) { toast('Geolokalisering stöds inte i den här webbläsaren', 'err'); return; }
+  const btn = document.getElementById('btn-geolocate');
+  btn.classList.add('loading');
+  btn.disabled = true;
+  navigator.geolocation.getCurrentPosition(
+    async pos => {
+      const lat = pos.coords.latitude.toFixed(6);
+      const lon = pos.coords.longitude.toFixed(6);
+      btn.classList.remove('loading'); btn.disabled = false;
+      // Reverse geocode to get a human-readable name
+      try {
+        const r = await fetch(
+          `https://nominatim.openstreetmap.org/reverse?lat=${lat}&lon=${lon}&format=json&accept-language=sv`,
+          { headers: { 'User-Agent': 'slkiosk-admin/2.0' } }
+        );
+        const d = await r.json();
+        const name = d.address?.city || d.address?.town || d.address?.village || d.address?.suburb || 'Din plats';
+        document.getElementById('cfg-location-search').value = name;
+        setLocationDisplay(name, lat, lon);
+        toast('Plats hämtad: ' + name, 'ok');
+      } catch(e) {
+        setLocationDisplay('Din plats', lat, lon);
+        document.getElementById('cfg-location-search').value = 'Din plats';
+        toast('Koordinater hämtade', 'ok');
+      }
+    },
+    err => {
+      btn.classList.remove('loading'); btn.disabled = false;
+      const msgs = { 1:'Platsåtkomst nekades — tillåt platsdelning i webbläsaren', 2:'Plats kunde inte bestämmas', 3:'Tidsgräns överskreds' };
+      toast(msgs[err.code] || 'Kunde inte hämta plats', 'err');
+    },
+    { timeout: 10000 }
+  );
+}
+
+// Close location dropdown on outside click
+document.addEventListener('click', e => {
+  if (!e.target.closest('.location-search-wrap')) {
+    document.getElementById('location-dd')?.classList.remove('open');
+  }
+});
 
 // ── TOAST ──────────────────────────────────────────────────
 function toast(msg, type='ok') {
