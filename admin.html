@@ -120,13 +120,42 @@ body{font-family:var(--font);background:var(--bg);color:var(--text);min-height:1
 .btn-add-stop{display:flex;align-items:center;gap:6px;background:var(--card);border:1.5px dashed var(--border);border-radius:8px;padding:9px 14px;cursor:pointer;color:var(--text3);font-size:0.82rem;font-weight:600;font-family:var(--font);transition:all .15s;width:100%;}
 .btn-add-stop:hover{border-color:var(--blue);color:var(--blue);background:var(--blue-bg);}
 
-/* ── LOGO UPLOAD ── */
-.logo-zone{border:2px dashed var(--border);border-radius:10px;padding:24px;text-align:center;cursor:pointer;transition:all .15s;position:relative;}
-.logo-zone:hover,.logo-zone.drag-over{border-color:var(--blue);background:var(--blue-bg);}
-.logo-zone input{position:absolute;inset:0;opacity:0;cursor:pointer;width:100%;height:100%;}
-.logo-zone-icon{font-size:2rem;margin-bottom:8px;}
-.logo-zone-label{font-size:0.85rem;font-weight:600;color:var(--text2);}
-.logo-zone-hint{font-size:0.72rem;color:var(--text3);margin-top:4px;}
+/* ── STOP SEARCH ── */
+.stop-search-wrap { position:relative; }
+.stop-search-input { width:100%;border:1.5px solid var(--border);border-radius:6px;padding:7px 9px 7px 30px;font-family:var(--font);font-size:0.85rem;color:var(--text);background:var(--card);outline:none;transition:border-color .15s; }
+.stop-search-input:focus { border-color:var(--blue); }
+.stop-search-icon { position:absolute;left:8px;top:50%;transform:translateY(-50%);color:var(--text3);pointer-events:none; }
+.stop-search-dd { position:absolute;top:calc(100% + 3px);left:0;right:0;background:var(--card);border:1px solid var(--border);border-radius:8px;z-index:200;box-shadow:0 4px 20px rgba(0,0,0,0.12);display:none;overflow:hidden; }
+.stop-search-dd.open { display:block; }
+.stop-dd-item { padding:9px 12px;cursor:pointer;font-size:0.85rem;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:8px;transition:background .1s; }
+.stop-dd-item:last-child { border-bottom:none; }
+.stop-dd-item:hover { background:var(--blue-bg); }
+.stop-dd-name { flex:1;font-weight:500; }
+.stop-dd-id { font-size:0.68rem;color:var(--text3); }
+.stop-selected-box { background:var(--blue-bg);border:1.5px solid var(--blue);border-radius:6px;padding:7px 10px;display:none;align-items:center;gap:8px; }
+.stop-selected-box.show { display:flex; }
+.stop-selected-name { flex:1;font-weight:600;font-size:0.85rem; }
+.stop-clear { background:none;border:none;cursor:pointer;color:var(--text3);font-size:1rem;line-height:1;padding:0; }
+.stop-clear:hover { color:var(--red); }
+
+/* ── STOP ROW (new layout) ── */
+.stop-row { display:grid;grid-template-columns:1fr 90px 80px 36px;gap:8px;align-items:start; }
+.stop-row-headers { display:grid;grid-template-columns:1fr 90px 80px 36px;gap:8px;margin-bottom:4px; }
+
+/* ── KIOSK URL BOX ── */
+.kiosk-url-box { background:var(--blue-bg);border:1px solid #aac4dc;border-radius:10px;padding:14px 18px;margin-bottom:24px; }
+.kiosk-url-label { font-size:0.65rem;font-weight:700;text-transform:uppercase;letter-spacing:0.08em;color:var(--blue);margin-bottom:6px; }
+.kiosk-url-value { font-size:1rem;font-weight:700;color:var(--blue);word-break:break-all;margin-bottom:6px; }
+.kiosk-url-hint { font-size:0.75rem;color:var(--text3); }
+.kiosk-url-copy { font-size:0.75rem;font-weight:600;color:var(--blue);background:none;border:1px solid var(--blue);border-radius:5px;padding:3px 10px;cursor:pointer;font-family:var(--font);transition:all .12s;margin-top:6px;display:inline-block; }
+.kiosk-url-copy:hover { background:var(--blue);color:white; }
+
+/* ── LOGO UPLOAD (fixed) ── */
+.logo-zone { border:2px dashed var(--border);border-radius:10px;padding:24px;text-align:center;cursor:pointer;transition:all .15s;position:relative;overflow:hidden; }
+.logo-zone:hover,.logo-zone.drag-over { border-color:var(--blue);background:var(--blue-bg); }
+.logo-file-input { display:none; }
+.logo-zone-btn { display:inline-flex;align-items:center;gap:6px;background:var(--blue);color:white;border:none;border-radius:7px;padding:9px 18px;font-family:var(--font);font-size:0.85rem;font-weight:600;cursor:pointer;margin-top:10px;transition:background .15s; }
+.logo-zone-btn:hover { background:var(--blue-dark); }
 .logo-preview-wrap{margin-top:16px;display:none;}
 .logo-preview-wrap.show{display:block;}
 .logo-preview-inner{background:#1a2535;border-radius:10px;padding:20px;display:flex;align-items:center;gap:16px;}
@@ -198,7 +227,6 @@ body{font-family:var(--font);background:var(--bg);color:var(--text);min-height:1
 
 <!-- TOPBAR -->
 <div class="topbar">
-  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 61 48" width="26" height="20"><path d="M30.3 41.703a23.845 23.845 0 0 0 16.972-7.03 23.845 23.845 0 0 0 7.03-16.972v-.493h-2.815v.493c0 5.66-2.204 10.98-6.205 14.982A21.049 21.049 0 0 1 30.3 38.888c-5.66 0-10.98-2.203-14.982-6.205A21.048 21.048 0 0 1 9.113 17.7v-.493H6.298v.493a23.844 23.844 0 0 0 7.03 16.972 23.845 23.845 0 0 0 16.972 7.03zm0-38.888c8.208 0 14.886 6.678 14.886 14.886 0 8.209-6.678 14.887-14.886 14.887-8.208 0-14.887-6.678-14.887-14.887 0-8.208 6.679-14.886 14.887-14.886zm0 32.588c4.728 0 9.173-1.842 12.517-5.185A17.586 17.586 0 0 0 48 17.701c0-4.728-1.84-9.173-5.184-12.516A17.586 17.586 0 0 0 30.3 0a17.586 17.586 0 0 0-12.517 5.185A17.586 17.586 0 0 0 12.6 17.7c0 4.729 1.84 9.174 5.184 12.517A17.586 17.586 0 0 0 30.3 35.403zm27.485-18.195v.493c0 7.342-2.859 14.244-8.05 19.435-5.191 5.191-12.094 8.05-19.435 8.05-7.341 0-14.244-2.859-19.435-8.05-5.191-5.191-8.05-12.093-8.05-19.435v-.493H0v.493c0 4.09.801 8.058 2.382 11.795a30.197 30.197 0 0 0 6.493 9.63A30.2 30.2 0 0 0 30.3 48.002a30.2 30.2 0 0 0 21.425-8.875 30.199 30.199 0 0 0 6.493-9.63A30.113 30.113 0 0 0 60.6 17.7v-.493h-2.815zm-17.02 4.213H35.53v-11.22h-3.032v13.926h8.267v-2.706zm-15.191.247c-2.36 0-3.993-1.543-3.993-1.543l-1.686 2.074s2.178 2.12 5.621 2.12c3.07 0 5.055-1.686 5.055-4.294 0-2.732-2.168-3.636-4.511-4.205-2.718-.65-2.85-1.101-2.85-1.843 0-.812.686-1.316 1.791-1.316 1.732 0 3.085 1.013 3.085 1.013l1.707-2.104s-1.748-1.558-4.754-1.558c-2.837 0-4.744 1.678-4.744 4.175 0 2.64 1.71 3.57 4.664 4.284 2.696.623 2.696 1.162 2.696 1.785 0 .87-.798 1.412-2.081 1.412z" fill="white" fill-rule="evenodd"/></svg>
   <span class="tb-title">slkiosk</span>
   <span class="tb-sub">Admin</span>
   <div class="tb-spacer"></div>
@@ -241,6 +269,15 @@ body{font-family:var(--font);background:var(--bg);color:var(--text);min-height:1
     </div>
 
     <div class="edit-container">
+      <!-- KIOSK URL -->
+      <div class="kiosk-url-box">
+        <div class="kiosk-url-label">Kiosk-URL — visa på skärmen</div>
+        <div class="kiosk-url-value" id="edit-kiosk-url"></div>
+        <div class="kiosk-url-hint">Öppna denna adress i Chromium på Raspberry Pi eller i valfri webbläsare i helskärmsläge.</div>
+        <button class="kiosk-url-copy" onclick="copyKioskUrl()">Kopiera URL</button>
+        <a id="edit-kiosk-open" href="#" target="_blank" style="font-size:0.75rem;font-weight:600;color:var(--blue);margin-left:8px;text-decoration:none;">Öppna kiosk ↗</a>
+      </div>
+
       <!-- TABS -->
       <div class="tabs">
         <button class="tab active" onclick="switchTab('branding')">Branding</button>
@@ -275,10 +312,14 @@ body{font-family:var(--font);background:var(--bg);color:var(--text);min-height:1
         <div class="form-section">
           <label class="form-label">Logotyp</label>
           <div class="logo-zone" id="logo-zone">
-            <input type="file" id="logo-input" accept=".svg,.png,.webp,.jpg,.jpeg" onchange="handleLogoFile(this.files[0])">
+            <input type="file" id="logo-input" class="logo-file-input" accept=".svg,.png,.webp,.jpg,.jpeg" onchange="handleLogoFile(this.files[0])">
             <div class="logo-zone-icon">🖼</div>
-            <div class="logo-zone-label">Dra & släpp eller klicka för att ladda upp</div>
+            <div class="logo-zone-label" style="font-size:0.85rem;font-weight:600;color:var(--text2)">Dra &amp; släpp logotyp här</div>
             <div class="logo-zone-hint">SVG, PNG, WebP eller JPEG · Max 2 MB</div>
+            <button type="button" class="logo-zone-btn" onclick="document.getElementById('logo-input').click()">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+              Välj fil
+            </button>
           </div>
           <div class="logo-preview-wrap" id="logo-preview-wrap">
             <div class="logo-preview-inner" id="logo-preview-bg">
@@ -293,7 +334,7 @@ body{font-family:var(--font);background:var(--bg);color:var(--text);min-height:1
                 <input type="checkbox" id="cfg-brandcolor" onchange="updateLogoPreview()">
                 Originalfärger (avmarkera för vit logotyp)
               </label>
-              <button class="btn-secondary" style="font-size:0.75rem;padding:5px 10px;margin-left:auto" onclick="removeLogo()">Ta bort logotyp</button>
+              <button type="button" class="btn-secondary" style="font-size:0.75rem;padding:5px 10px;margin-left:auto" onclick="removeLogo()">Ta bort logotyp</button>
             </div>
           </div>
         </div>
@@ -314,16 +355,10 @@ body{font-family:var(--font);background:var(--bg);color:var(--text);min-height:1
 
       <!-- TAB: STOPS -->
       <div class="tab-panel" id="tab-stops">
-        <div class="form-section">
-          <label class="form-label">Proxy-URL</label>
-          <input class="form-input" type="text" id="cfg-proxy" placeholder="https://sltavla.soxbox.uk/api/proxy">
-          <div class="form-hint">Lämna tomt för att använda sltavla.soxbox.uk:s proxy</div>
-        </div>
 
         <label class="form-label">Hållplatser</label>
         <div class="stop-row-headers">
-          <div class="stop-row-label" style="text-align:left">Stop-ID</div>
-          <div class="stop-row-label" style="text-align:left">Visningsnamn</div>
+          <div class="stop-row-label" style="text-align:left;grid-column:1/3">Hållplats</div>
           <div class="stop-row-label">Headerfärg</div>
           <div class="stop-row-label">Ikon</div>
           <div></div>
@@ -333,7 +368,6 @@ body{font-family:var(--font);background:var(--bg);color:var(--text);min-height:1
           <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
           Lägg till hållplats
         </button>
-        <div class="form-hint" style="margin-top:10px">Hitta Stop-ID på <a href="https://sltavla.soxbox.uk" target="_blank">sltavla.soxbox.uk</a> → skapa en tavla → ⚙ Debug</div>
       </div>
 
       <!-- TAB: TICKER -->
@@ -512,9 +546,12 @@ async function openEdit(slug) {
   renderInfoList();
   renderPreview();
 
-  // Edit topbar
+  // Edit topbar + URL box
+  const kioskUrl = location.origin + '/' + slug;
   document.getElementById('edit-topbar-title').textContent = editCfg.brandname || slug;
   document.getElementById('edit-preview-link').href = '/' + slug;
+  document.getElementById('edit-kiosk-url').textContent = kioskUrl;
+  document.getElementById('edit-kiosk-open').href = '/' + slug;
 
   document.querySelectorAll('.view').forEach(v=>v.classList.remove('active'));
   document.getElementById('view-edit').classList.add('active');
@@ -538,14 +575,27 @@ function renderStops() {
   const names    = editCfg.stopNames || [];
   const colors   = editCfg.colors    || [];
   const icons    = editCfg.icons     || [];
-  document.getElementById('cfg-proxy').value = editCfg.proxy || '';
 
   list.innerHTML = stops.map((id, i) => `
-    <div class="stop-row">
-      <input class="stop-input" type="text" value="${h(id)}" placeholder="740012345"
-        oninput="editCfg.stops[${i}]=this.value">
-      <input class="stop-input" type="text" value="${h(names[i]||'')}" placeholder="Hållplatsnamn"
-        oninput="if(!editCfg.stopNames)editCfg.stopNames=[];editCfg.stopNames[${i}]=this.value">
+    <div class="stop-row" id="stop-row-${i}">
+      <div>
+        <div class="stop-search-wrap" id="stop-search-wrap-${i}">
+          <svg class="stop-search-icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+          <input class="stop-search-input" type="text" placeholder="Sök hållplats…"
+            autocomplete="off"
+            oninput="onStopSearch(${i},this.value)"
+            onfocus="onStopSearchFocus(${i})">
+          <div class="stop-search-dd" id="stop-dd-${i}"></div>
+        </div>
+        <div class="stop-selected-box show" id="stop-sel-${i}">
+          <span style="color:var(--blue);display:flex;flex-shrink:0">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
+          </span>
+          <span class="stop-selected-name" id="stop-sel-name-${i}">${h(names[i]||id)}</span>
+          <span style="font-size:0.68rem;color:var(--text3);flex-shrink:0">${id}</span>
+          <button class="stop-clear" onclick="clearStop(${i})">✕</button>
+        </div>
+      </div>
       <select class="stop-color-sel" onchange="if(!editCfg.colors)editCfg.colors=[];editCfg.colors[${i}]=this.value">
         ${['blue','red','green','orange','dark'].map(c=>`<option value="${c}" ${(colors[i]||'blue')===c?'selected':''}>${c.charAt(0).toUpperCase()+c.slice(1)}</option>`).join('')}
       </select>
@@ -556,27 +606,131 @@ function renderStops() {
         <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
       </button>
     </div>`).join('');
+
+  // New stop rows: show search input, hide selected box
+  // Existing stops with ID: show selected box, hide search
+  stops.forEach((id, i) => {
+    const wrap = document.getElementById(`stop-search-wrap-${i}`);
+    const sel  = document.getElementById(`stop-sel-${i}`);
+    if (id) {
+      wrap.style.display = 'none';
+      sel.classList.add('show');
+    } else {
+      wrap.style.display = 'block';
+      sel.classList.remove('show');
+    }
+  });
 }
 
-function addStop() {
+let stopSearchTimers = {};
+
+function onStopSearch(i, q) {
+  clearTimeout(stopSearchTimers[i]);
+  const dd = document.getElementById(`stop-dd-${i}`);
+  if (q.length < 2) { dd.classList.remove('open'); return; }
+  dd.innerHTML = `<div class="stop-dd-item" style="cursor:default;color:var(--text3)">Söker…</div>`;
+  dd.classList.add('open');
+  stopSearchTimers[i] = setTimeout(() => doStopSearch(i, q), 280);
+}
+
+function onStopSearchFocus(i) {
+  const inp = document.querySelector(`#stop-search-wrap-${i} .stop-search-input`);
+  if (inp && inp.value.length >= 2) doStopSearch(i, inp.value);
+}
+
+async function doStopSearch(i, q) {
+  const dd = document.getElementById(`stop-dd-${i}`);
+  const PROXY = 'https://sltavla.soxbox.uk/api/proxy';
+  const tlUrl = PROXY + '?url=' + encodeURIComponent(
+    `https://realtime-api.trafiklab.se/v1/stops/name/${encodeURIComponent(q)}?transport_authority_id=275`
+  );
+  const slUrl = PROXY + '?url=' + encodeURIComponent(
+    `https://transport.integration.sl.se/v1/sites?expand=false&q=${encodeURIComponent(q)}`
+  );
+
+  try {
+    // Try Trafiklab first
+    const r = await fetch(tlUrl);
+    if (r.ok) {
+      const d = await r.json();
+      const groups = (d.stop_groups || []).filter(g => {
+        const s = String(g.id);
+        return s.length === 9 && s.startsWith('7400');
+      });
+      if (groups.length) { renderStopDd(i, groups.slice(0,8).map(g => ({ id: String(g.id), name: g.name })), dd); return; }
+    }
+  } catch(e) {}
+
+  // Fallback: SL API
+  try {
+    const r = await fetch(slUrl);
+    if (r.ok) {
+      const data = await r.json();
+      const hits = (Array.isArray(data) ? data : data.sites || []).slice(0,8);
+      renderStopDd(i, hits.map(s => ({ id: String(s.id), name: s.name })), dd);
+      return;
+    }
+  } catch(e) {}
+
+  dd.innerHTML = `<div class="stop-dd-item" style="cursor:default;color:var(--text3)">Inga hållplatser hittades</div>`;
+  dd.classList.add('open');
+}
+
+function renderStopDd(i, stops, dd) {
+  if (!stops.length) {
+    dd.innerHTML = `<div class="stop-dd-item" style="cursor:default;color:var(--text3)">Inga hållplatser hittades</div>`;
+    dd.classList.add('open');
+    return;
+  }
+  dd.innerHTML = stops.map(s => `
+    <div class="stop-dd-item" onclick="pickStop(${i},'${s.id}','${h(s.name)}')">
+      <span style="color:var(--blue);display:flex">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
+      </span>
+      <span class="stop-dd-name">${h(s.name)}</span>
+      <span class="stop-dd-id">${s.id}</span>
+    </div>`).join('');
+  dd.classList.add('open');
+}
+
+function pickStop(i, id, name) {
   if (!editCfg.stops) editCfg.stops = [];
   if (!editCfg.stopNames) editCfg.stopNames = [];
-  if (!editCfg.colors) editCfg.colors = [];
-  if (!editCfg.icons)  editCfg.icons  = [];
-  editCfg.stops.push('');
-  editCfg.stopNames.push('');
-  editCfg.colors.push('blue');
-  editCfg.icons.push('');
-  renderStops();
+  editCfg.stops[i]     = id;
+  editCfg.stopNames[i] = name;
+
+  // Hide search, show selected
+  const wrap = document.getElementById(`stop-search-wrap-${i}`);
+  const sel  = document.getElementById(`stop-sel-${i}`);
+  const selName = document.getElementById(`stop-sel-name-${i}`);
+  if (wrap) wrap.style.display = 'none';
+  if (sel)  sel.classList.add('show');
+  if (selName) selName.textContent = name;
+
+  // Update ID display
+  const idSpan = sel?.querySelector('span:nth-child(3)');
+  if (idSpan) idSpan.textContent = id;
+
+  // Close dropdown
+  const dd = document.getElementById(`stop-dd-${i}`);
+  if (dd) dd.classList.remove('open');
 }
 
-function removeStop(i) {
-  editCfg.stops.splice(i,1);
-  editCfg.stopNames.splice(i,1);
-  editCfg.colors.splice(i,1);
-  editCfg.icons.splice(i,1);
-  renderStops();
+function clearStop(i) {
+  if (editCfg.stops) editCfg.stops[i] = '';
+  if (editCfg.stopNames) editCfg.stopNames[i] = '';
+  const wrap = document.getElementById(`stop-search-wrap-${i}`);
+  const sel  = document.getElementById(`stop-sel-${i}`);
+  if (wrap) { wrap.style.display = 'block'; wrap.querySelector('input').value = ''; }
+  if (sel)  sel.classList.remove('show');
 }
+
+// Close dropdowns on outside click
+document.addEventListener('click', e => {
+  if (!e.target.closest('.stop-search-wrap')) {
+    document.querySelectorAll('.stop-search-dd').forEach(dd => dd.classList.remove('open'));
+  }
+});
 
 // ── LOGO ───────────────────────────────────────────────────
 const logoZone = document.getElementById('logo-zone');
@@ -731,7 +885,7 @@ async function saveAll() {
       lat:        parseFloat(document.getElementById('cfg-lat').value)||59.3293,
       lon:        parseFloat(document.getElementById('cfg-lon').value)||18.0686,
       brandcolor: document.getElementById('cfg-brandcolor').checked,
-      proxy:      document.getElementById('cfg-proxy').value.trim()||'https://sltavla.soxbox.uk/api/proxy',
+      proxy:      'https://sltavla.soxbox.uk/api/proxy',
     };
 
     // Upload logo if pending
@@ -816,6 +970,11 @@ async function deleteKiosk() {
     toast('Kiosk borttagen', 'ok');
     showList();
   } catch(e) { toast(e.message, 'err'); }
+}
+
+function copyKioskUrl() {
+  const url = document.getElementById('edit-kiosk-url').textContent;
+  navigator.clipboard.writeText(url).then(() => toast('URL kopierad!', 'ok'));
 }
 
 // ── TOAST ──────────────────────────────────────────────────
