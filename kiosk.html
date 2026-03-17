@@ -619,7 +619,6 @@ async function fetchWeather() {
     document.getElementById('tb-w-icon').textContent=ico;
     document.getElementById('tb-w-temp').textContent=temp+'°';
     document.getElementById('tb-w-desc').textContent=desc;
-    document.getElementById('tb-w-wind').textContent=wind+' m/s';
     document.getElementById('tb-weather').style.display='flex';
 
     // Footer
@@ -629,7 +628,6 @@ async function fetchWeather() {
     document.getElementById('wm-wind').textContent=wind+' m/s';
     document.getElementById('wm-hum').textContent=hum+'%';
     document.getElementById('wm-feel').textContent=feel+'°C';
-    document.getElementById('wm-vis').textContent=vis;
     document.getElementById('wm-forecast').innerHTML=dl.time.slice(0,5).map((dt,i)=>{
       const dd=new Date(dt+'T12:00:00'), lbl=i===0?'Idag':DS[dd.getDay()];
       return `<div class="wm-fc-d"><div class="wm-fc-l">${lbl}</div><div class="wm-fc-i">${WI[dl.weather_code[i]]||'🌡'}</div><div class="wm-fc-t">${Math.round(dl.temperature_2m_max[i])}°/${Math.round(dl.temperature_2m_min[i])}°</div></div>`;
