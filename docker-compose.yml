@@ -11,7 +11,7 @@ services:
       - slkiosk-net
       - mediastack
 
-  sl-kiosk-proxy:
+  slkiosk-proxy:
     build:
       context: .
       dockerfile: Dockerfile.proxy
@@ -22,12 +22,12 @@ services:
       - ADMIN_PW=${ADMIN_PW:-kiosk2024}
       - INFO_PATH=/data/info.json
     volumes:
-      - kiosk-data:/data
+      - slkiosk-data:/data
     networks:
       - slkiosk-net
 
 volumes:
-  kiosk-data:
+  slkiosk-data:
     name: slkiosk-data
 
 networks:
