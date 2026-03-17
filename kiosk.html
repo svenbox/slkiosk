@@ -175,7 +175,7 @@ html,body{width:100%;height:100%;overflow:hidden;font-family:var(--font);backgro
 
   <div id="footer">
     <div id="weather-mod">
-      <div class="wm-heading">Väder</div>
+      <div class="wm-heading" id="wm-heading">Väder</div>
       <div class="wm-body">
         <div class="wm-main">
           <div class="wm-icon" id="wm-icon">⛅</div>
@@ -255,6 +255,9 @@ function applyConfig() {
     document.getElementById('brand-name').textContent = CFG.brandname;
     document.title = CFG.brandname + ' – Infoskärm';
   }
+  // Weather heading
+  const wh = document.getElementById('wm-heading');
+  if (wh) wh.textContent = CFG.locationName ? `Väder · ${CFG.locationName}` : 'Väder';
 
   if (CFG.logoFile) {
     const img = document.getElementById('brand-logo');
