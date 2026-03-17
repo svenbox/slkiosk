@@ -18,7 +18,7 @@ if (ADMIN_PW === 'kiosk2024') console.warn('⚠️  Standardlösenord används �
 fs.mkdirSync(DATA_DIR, { recursive: true });
 
 // ── Helpers ────────────────────────────────────────────────
-const ALLOWED_TL = ['realtime-api.trafiklab.se', 'transport.integration.sl.se'];
+const ALLOWED_TL = ['realtime-api.trafiklab.se', 'transport.integration.sl.se', 'journeyplanner.integration.sl.se'];
 
 function json(res, status, data) {
   const body = JSON.stringify(data, null, 2);
