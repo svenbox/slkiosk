@@ -143,7 +143,38 @@ body{font-family:var(--font);background:var(--bg);color:var(--text);min-height:1
 .stop-row { display:grid;grid-template-columns:1fr 90px 80px 36px;gap:8px;align-items:start; }
 .stop-row-headers { display:grid;grid-template-columns:1fr 90px 80px 36px;gap:8px;margin-bottom:4px; }
 
-/* ── KIOSK MAP ── */
+/* ── THEME PICKER ── */
+.theme-grid { display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:4px; }
+.theme-card { border:2px solid var(--border);border-radius:10px;overflow:hidden;cursor:pointer;transition:all .15s;background:var(--card); }
+.theme-card:hover { border-color:var(--blue);transform:translateY(-2px);box-shadow:0 4px 16px rgba(0,91,153,0.15); }
+.theme-card.active { border-color:var(--blue);box-shadow:0 0 0 3px rgba(0,91,153,0.15); }
+.theme-preview { height:110px;padding:6px;display:flex;flex-direction:column;gap:3px; }
+.transit-preview { background:#1a2535; }
+.modern-preview  { background:linear-gradient(135deg,#1a2535 0%,#2a3550 100%); }
+.bold-preview    { background:#000; }
+.tp-topbar  { height:14px;background:rgba(255,255,255,0.12);border-radius:2px; }
+.tp-topbar.thick { height:17px;border-radius:1px; }
+.tp-ticker  { height:10px;background:rgba(255,255,255,0.08);border-radius:2px; }
+.tp-ticker.glass { background:rgba(255,255,255,0.1);border:1px solid rgba(255,255,255,0.12);border-radius:4px; }
+.tp-ticker.slim  { height:8px;border:1px solid rgba(255,255,255,0.1);border-radius:1px; }
+.tp-modules { display:grid;grid-template-columns:1fr 1fr;gap:3px;flex:1; }
+.tp-mod { background:rgba(255,255,255,0.06);border-radius:2px;overflow:hidden;display:flex;flex-direction:column; }
+.tp-mod.glass { background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.1);border-radius:5px; }
+.tp-mod.dark  { background:#0d0d0d;border:1px solid rgba(255,255,255,0.08);border-radius:1px; }
+.tp-mod-hdr { height:16px; }
+.tp-mod-hdr.blue { background:#005b99; }
+.tp-mod-hdr.red  { background:#d4171e; }
+.tp-mod-hdr.thick-hdr { height:20px; }
+.tp-rows { flex:1;padding:3px;display:flex;flex-direction:column;gap:2px; }
+.tp-rows::before,.tp-rows::after,.bold-rows::before,.bold-rows::after {
+  content:'';display:block;height:4px;background:rgba(255,255,255,0.1);border-radius:1px;
+}
+.bold-rows::before,.bold-rows::after { height:6px;background:rgba(255,255,255,0.15); }
+.tp-footer { height:20px;background:rgba(255,255,255,0.06);border-radius:2px; }
+.tp-footer.glass { background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.1);border-radius:5px; }
+.tp-footer.dark  { background:#0d0d0d;border:1px solid rgba(255,255,255,0.08);border-radius:1px; }
+.theme-label { font-size:0.88rem;font-weight:700;padding:6px 10px 2px; }
+.theme-desc  { font-size:0.68rem;color:var(--text3);padding:0 10px 8px;line-height:1.4; }
 .map-wrap { border-radius:10px;overflow:hidden;border:1.5px solid var(--border);margin-top:8px; }
 #kiosk-map { height:280px;width:100%;background:#e8e0d8; }
 .map-hint { font-size:0.75rem;color:var(--text3);margin-top:6px;display:flex;align-items:center;gap:5px; }
@@ -305,6 +336,53 @@ body{font-family:var(--font);background:var(--bg);color:var(--text);min-height:1
 
       <!-- TAB: BRANDING -->
       <div class="tab-panel active" id="tab-branding">
+
+        <!-- THEME PICKER -->
+        <div class="form-section">
+          <label class="form-label">Grafisk profil</label>
+          <div class="theme-grid" id="theme-grid">
+            <div class="theme-card active" data-theme="transit" onclick="pickTheme('transit')">
+              <div class="theme-preview transit-preview">
+                <div class="tp-topbar"></div>
+                <div class="tp-ticker"></div>
+                <div class="tp-modules">
+                  <div class="tp-mod"><div class="tp-mod-hdr blue"></div><div class="tp-rows"></div></div>
+                  <div class="tp-mod"><div class="tp-mod-hdr red"></div><div class="tp-rows"></div></div>
+                </div>
+                <div class="tp-footer"></div>
+              </div>
+              <div class="theme-label">Transit</div>
+              <div class="theme-desc">SL-typsnitt · Kompakt · Professionell</div>
+            </div>
+            <div class="theme-card" data-theme="modern" onclick="pickTheme('modern')">
+              <div class="theme-preview modern-preview">
+                <div class="tp-topbar"></div>
+                <div class="tp-ticker glass"></div>
+                <div class="tp-modules">
+                  <div class="tp-mod glass"><div class="tp-mod-hdr blue"></div><div class="tp-rows"></div></div>
+                  <div class="tp-mod glass"><div class="tp-mod-hdr red"></div><div class="tp-rows"></div></div>
+                </div>
+                <div class="tp-footer glass"></div>
+              </div>
+              <div class="theme-label">Modern</div>
+              <div class="theme-desc">Inter · Glasmorfism · Luftig</div>
+            </div>
+            <div class="theme-card" data-theme="bold" onclick="pickTheme('bold')">
+              <div class="theme-preview bold-preview">
+                <div class="tp-topbar thick"></div>
+                <div class="tp-ticker slim"></div>
+                <div class="tp-modules">
+                  <div class="tp-mod dark"><div class="tp-mod-hdr blue thick-hdr"></div><div class="tp-rows bold-rows"></div></div>
+                  <div class="tp-mod dark"><div class="tp-mod-hdr red thick-hdr"></div><div class="tp-rows bold-rows"></div></div>
+                </div>
+                <div class="tp-footer dark"></div>
+              </div>
+              <div class="theme-label">Bold</div>
+              <div class="theme-desc">Barlow Condensed · Maximal kontrast</div>
+            </div>
+          </div>
+        </div>
+
         <div class="form-row-2">
           <div class="form-section">
             <label class="form-label">Namn på organisation</label>
@@ -572,6 +650,8 @@ async function openEdit(slug) {
   // Populate branding tab
   document.getElementById('cfg-brandname').value = editCfg.brandname || '';
   document.getElementById('cfg-accent').value    = editCfg.accent     || '#1a2535';
+  // Theme
+  pickTheme(editCfg.theme || 'transit');
   document.getElementById('cfg-qr').value        = editCfg.qr         || '';
   document.getElementById('cfg-qrlabel').value   = (editCfg.qrlabel||'').replace(/\\n/g,'\n');
   document.getElementById('cfg-lat').value = editCfg.lat || 59.3293;
@@ -981,6 +1061,7 @@ async function saveAll() {
       ...editCfg,
       brandname:  document.getElementById('cfg-brandname').value.trim(),
       accent:     document.getElementById('cfg-accent').value,
+      theme:      editCfg.theme || 'transit',
       qr:         document.getElementById('cfg-qr').value.trim(),
       qrlabel:    document.getElementById('cfg-qrlabel').value,
       lat:        parseFloat(document.getElementById('cfg-lat').value)||59.3293,
@@ -1076,6 +1157,13 @@ async function deleteKiosk() {
     toast('Kiosk borttagen', 'ok');
     showList();
   } catch(e) { toast(e.message, 'err'); }
+}
+
+function pickTheme(theme) {
+  editCfg.theme = theme;
+  document.querySelectorAll('.theme-card').forEach(c => {
+    c.classList.toggle('active', c.dataset.theme === theme);
+  });
 }
 
 function copyKioskUrl() {
